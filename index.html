@@ -1,0 +1,1956 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Examen Final — Programación Web II (SIS-0301) · UPDS 2026</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: { extend: {
+    colors: { ios: { blue:'#007AFF', green:'#34C759', red:'#FF3B30', orange:'#FF9500',
+                     purple:'#AF52DE', teal:'#5AC8FA', bg:'#F2F2F7', sep:'#E5E5EA', second:'#6C6C70' } },
+    fontFamily: { sans:['-apple-system','BlinkMacSystemFont','Segoe UI','system-ui','sans-serif'] }
+  }}
+}
+</script>
+<style>
+*{-webkit-tap-highlight-color:transparent}
+body{-webkit-font-smoothing:antialiased;background:#F2F2F7}
+.card{background:#fff;border-radius:18px;box-shadow:0 2px 8px rgba(0,0,0,.07),0 0 1px rgba(0,0,0,.06)}
+.opt{border:2px solid #E5E5EA;border-radius:13px;transition:all .16s ease;cursor:pointer;user-select:none}
+.opt:hover{border-color:#C6C6C8;background:#FAFAFA}
+.opt.sel{border-color:#007AFF;background:#EBF5FF}
+.opt.ok{border-color:#34C759!important;background:#E8F8EE!important}
+.opt.fail{border-color:#FF3B30!important;background:#FFF0EE!important}
+.opt.missed{border-color:#FF9500!important;background:#FFF5E6!important}
+.opt:active{transform:scale(.98)}
+.tf{border:2px solid #E5E5EA;border-radius:13px;cursor:pointer;transition:all .16s ease;user-select:none;padding:12px;text-align:center;font-weight:600}
+.tf.sel-true{border-color:#34C759;background:#E8F8EE;color:#1A7A34}
+.tf.sel-false{border-color:#FF3B30;background:#FFF0EE;color:#C0392B}
+.tf.ok{border-color:#34C759;background:#E8F8EE}
+.tf.fail{border-color:#FF3B30;background:#FFF0EE}
+.tf:active{transform:scale(.98)}
+.chip{cursor:pointer;user-select:none;border:2px solid #007AFF;color:#007AFF;background:#EBF5FF;border-radius:10px;padding:5px 14px;font-weight:600;font-size:.875rem;transition:all .15s ease;display:inline-block}
+.chip:hover{background:#D6EBFF}
+.chip.active{background:#007AFF;color:#fff;transform:scale(1.05);box-shadow:0 4px 12px rgba(0,122,255,.3)}
+.chip.used{opacity:.3;pointer-events:none}
+.blank{display:inline-flex;align-items:center;justify-content:center;min-width:148px;height:36px;border:2px dashed #C6C6C8;border-radius:10px;background:#F9F9FB;color:#6C6C70;font-size:.875rem;font-weight:600;cursor:pointer;vertical-align:middle;margin:0 3px;transition:all .15s ease}
+.blank:hover{border-color:#007AFF;background:#EBF5FF;color:#007AFF}
+.blank.ready{border-color:#007AFF;background:#EBF5FF;color:#0055CC;border-style:solid}
+.blank.ok{border-color:#34C759;background:#E8F8EE;color:#1A7A34;border-style:solid}
+.blank.fail{border-color:#FF3B30;background:#FFF0EE;color:#C0392B;border-style:solid}
+.stab{border-radius:10px;padding:7px 14px;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .15s ease;border:2px solid transparent;white-space:nowrap}
+.stab.active{color:#fff}
+.progress-track{background:#E5E5EA;border-radius:99px;height:6px}
+.progress-fill{background:#007AFF;border-radius:99px;height:6px;transition:width .5s cubic-bezier(.34,1.56,.64,1)}
+.section-in{animation:sIn .3s ease}
+@keyframes sIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.score-ring{animation:pulse 2.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+.cb-box{width:20px;height:20px;border:2px solid #C6C6C8;border-radius:5px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s ease}
+.cb-box.checked{background:#007AFF;border-color:#007AFF}
+.cb-box.ok-check{background:#34C759;border-color:#34C759}
+.cb-box.fail-check{background:#FF3B30;border-color:#FF3B30}
+.cb-box.missed-check{background:#FF9500;border-color:#FF9500}
+input[type=text],input[type=email],input[type=number],input[type=datetime-local]{outline:none;transition:border-color .15s ease}
+input[type=text]:focus,input[type=email]:focus,input[type=number]:focus,input[type=datetime-local]:focus{border-color:#007AFF}
+.insights-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.insight-card{border-radius:10px;padding:12px;font-size:.85rem;line-height:1.5;border-left:4px solid;background:#f9f9fb}
+.insight-card.high{border-left-color:#FF3B30;background:#FFF0EE}
+.insight-card.high .ic-title{color:#C0392B;font-weight:700}
+.insight-card.high .ic-text{color:#6D2826;font-size:.8rem}
+.insight-card.medium{border-left-color:#FF9500;background:#FFF5E6}
+.insight-card.medium .ic-title{color:#C67000;font-weight:700}
+.insight-card.medium .ic-text{color:#6B3F00;font-size:.8rem}
+.insight-card.low{border-left-color:#34C759;background:#E8F8EE}
+.insight-card.low .ic-title{color:#1A7A34;font-weight:700}
+.insight-card.low .ic-text{color:#0D5722;font-size:.8rem}
+@media print{
+  body{background:#fff!important}
+  #app-shell,#intake-screen,#results-overlay,header,.sticky,.fixed,#bottom-nav{display:none!important}
+  #print-report{display:block!important}
+  .pr-section{page-break-before:auto}
+  .pr-q{page-break-inside:avoid;border:1px solid #e5e5ea;border-radius:10px;padding:12px;margin-bottom:10px}
+  .pr-opt{padding:5px 10px;border-radius:6px;margin-bottom:4px;font-size:.85rem}
+  .pr-ok{background:#E8F8EE;color:#1A7A34}
+  .pr-fail{background:#FFF0EE;color:#C0392B}
+  .pr-missed{background:#FFF5E6;color:#c07000}
+  .pr-neutral{color:#555}
+  .pr-just{background:#F5F5F5;border-radius:8px;padding:8px;font-size:.82rem;color:#444;margin-top:8px}
+}
+#print-report{display:none}
+.codeblk{display:block;white-space:pre-wrap;word-break:break-word;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;line-height:1.5;font-weight:400;background:#1E1E2E;color:#E4E4EF;padding:12px 14px;border-radius:12px;margin:10px 0;overflow-x:auto;tab-size:4}
+.ic{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.86em;background:#EEF0F6;color:#B4235A;padding:1px 5px;border-radius:6px;word-break:break-word}
+.codeblk .ic{background:none;color:inherit}
+</style>
+</head>
+<body class="min-h-screen">
+
+<div id="intake-screen" class="min-h-screen flex items-start justify-center py-10 px-4">
+  <div style="max-width:540px;width:100%">
+    <div class="text-center mb-6">
+      <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-white mb-3 shadow-lg shadow-blue-200 p-2 border border-ios-sep">
+        <img id="intake-logo" alt="Logo UPDS" class="w-full h-full object-contain"/>
+      </div>
+      <h1 class="text-2xl font-bold text-gray-900">Examen Final</h1>
+      <p class="text-ios-second text-sm mt-1">Programación Web II (SIS-0301) · UPDS 2026</p>
+    </div>
+
+    <div class="card p-5 mb-4">
+      <div class="grid grid-cols-3 gap-3 text-center">
+        <div class="bg-blue-50 rounded-xl p-3">
+          <p class="text-xl font-bold text-ios-blue">32</p>
+          <p class="text-xs text-ios-second mt-0.5">preguntas</p>
+        </div>
+        <div class="bg-orange-50 rounded-xl p-3">
+          <p class="text-xl font-bold text-orange-500">40</p>
+          <p class="text-xs text-ios-second mt-0.5">minutos</p>
+        </div>
+        <div class="bg-green-50 rounded-xl p-3">
+          <p class="text-xl font-bold text-ios-green">4</p>
+          <p class="text-xs text-ios-second mt-0.5">bloques</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card p-5 mb-4">
+      <h2 class="font-bold text-gray-800 mb-4">Datos del estudiante</h2>
+      <div class="space-y-3">
+        <div>
+          <label class="text-xs font-semibold text-ios-second uppercase tracking-wide block mb-1">Nombre completo *</label>
+          <input id="inp-nombre" type="text" placeholder="Ej. Ana Sofía Torres Vidal"
+            class="w-full border-2 border-ios-sep rounded-xl px-4 py-3 text-sm text-gray-800"
+            oninput="checkIntake()" onchange="checkIntake()"/>
+        </div>
+        <div>
+          <label class="text-xs font-semibold text-ios-second uppercase tracking-wide block mb-1">Código de estudiante *</label>
+          <input id="inp-codigo" type="text" placeholder="Ej. 2023-SIS-0042"
+            class="w-full border-2 border-ios-sep rounded-xl px-4 py-3 text-sm text-gray-800"
+            oninput="checkIntake()" onchange="checkIntake()"/>
+        </div>
+        <div>
+          <label class="text-xs font-semibold text-ios-second uppercase tracking-wide block mb-1">Correo institucional *</label>
+          <input id="inp-email" type="email" placeholder="codigo@upds.edu.bo"
+            class="w-full border-2 border-ios-sep rounded-xl px-4 py-3 text-sm text-gray-800"
+            oninput="checkIntake()" onchange="checkIntake()"/>
+          <div id="lock-banner" style="display:none" class="mt-2 rounded-xl px-3 py-2.5 text-xs leading-relaxed"></div>
+        </div>
+        <div>
+          <label class="text-xs font-semibold text-ios-second uppercase tracking-wide block mb-1">Fecha y hora de inicio</label>
+          <input id="inp-fecha" type="datetime-local"
+            class="w-full border-2 border-ios-sep rounded-xl px-4 py-3 text-sm text-gray-800 bg-white cursor-text"
+            oninput="checkIntake()" onchange="checkIntake()"/>
+        </div>
+      </div>
+    </div>
+
+    <div class="card p-5 mb-5">
+      <h2 class="font-bold text-gray-800 mb-3">Declaración de Honestidad</h2>
+      <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-4 text-xs text-blue-800 leading-relaxed">
+        <p class="font-bold mb-1">Examen Final — Programación Web II (SIS-0301)</p>
+        <p><strong>Responde con honestidad</strong>, sin apoyo externo, para reflejar fielmente tu nivel real de dominio del contenido.</p>
+      </div>
+      <div class="bg-red-50 border-2 border-red-300 rounded-xl p-4 mb-4">
+        <p class="font-bold text-red-800 text-xs mb-1.5 flex items-center gap-1.5"><span class="text-base">&#128274;</span> Un solo intento por correo</p>
+        <p class="text-xs text-red-700 leading-relaxed">Este examen se puede rendir <strong>una única vez por correo institucional</strong>. En cuanto entregues, tu resultado queda registrado en este navegador como <strong>nota final</strong> y no podrás volver a rendirlo con el mismo correo: al reabrir el examen se te mostrará directamente esa nota, sin opción de repetirlo.</p>
+      </div>
+      <div class="bg-orange-50 border-2 border-orange-300 rounded-xl p-4 mb-4">
+        <p class="font-bold text-orange-800 text-xs mb-1.5 flex items-center gap-1.5"><span class="text-base">&#128196;</span> La entrega debe ser en PDF</p>
+        <p class="text-xs text-orange-700 leading-relaxed">Al terminar, descarga el reporte y <strong>súbelo a Moodle en formato PDF</strong> (usando "Guardar como PDF" en el cuadro de impresión). El reporte llevará tu <strong>código de verificación único</strong>. Cualquier entrega que no sea el PDF con ese código <strong>no será calificada</strong>.</p>
+      </div>
+      <label class="flex items-start gap-3 cursor-pointer group">
+        <input id="inp-consent" type="checkbox" onchange="toggleConsent(this.checked)" onclick="checkIntake()"
+          class="mt-0.5 w-5 h-5 flex-shrink-0 cursor-pointer"
+          style="accent-color:#007AFF"/>
+        <p class="text-sm text-gray-700 leading-relaxed">
+          Declaro que las respuestas que proporcione en este examen son <strong>completamente propias</strong>, basadas exclusivamente en mis conocimientos y sin apoyo externo, para que el resultado refleje fielmente mi nivel real de dominio de la materia. Entiendo que este es mi <strong>único intento</strong> con este correo y que debo entregar el reporte en <strong>formato PDF</strong> para ser calificado.
+        </p>
+      </label>
+    </div>
+
+    <button id="btn-start" onclick="handleStartClick()" disabled
+      class="w-full py-4 rounded-2xl font-bold text-base bg-gray-200 text-gray-400 transition-all cursor-not-allowed">
+      Completar todos los campos para continuar
+    </button>
+
+    <p class="text-center text-xs text-ios-second mt-4 pb-6">
+      SIS-0301 · Programación Web II · UPDS 2026 · Docente: Ing. M.Sc. Jimmy Nataniel Requena Llorentty
+    </p>
+  </div>
+</div>
+
+<div id="app-shell" style="display:none">
+  <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-ios-sep">
+    <div class="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+      <img id="hd-logo" alt="Logo UPDS" class="w-9 h-9 rounded-lg object-contain flex-shrink-0 border border-ios-sep bg-white p-0.5"/>
+      <div class="flex-1 min-w-0">
+        <p class="text-xs text-ios-second font-medium" id="hd-student">—</p>
+        <h1 class="text-sm font-bold text-gray-900 truncate">Examen Final — Programación Web II</h1>
+      </div>
+      <div class="text-right shrink-0">
+        <p class="text-xs text-ios-second">Tiempo</p>
+        <p id="timer" class="text-lg font-bold text-gray-800 tabular-nums">40:00</p>
+      </div>
+    </div>
+    <div class="max-w-2xl mx-auto px-4 pb-3">
+      <div class="flex justify-between text-xs text-ios-second mb-1">
+        <span id="prog-label">Bloque 1 de 4</span>
+        <span id="prog-pct">0 / 32</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progress-bar" style="width:0%"></div></div>
+    </div>
+  </header>
+
+  <div class="sticky top-[92px] z-40 bg-ios-bg/95 backdrop-blur-sm py-2 border-b border-ios-sep">
+    <div class="max-w-2xl mx-auto px-3 flex gap-2 overflow-x-auto pb-0.5" style="scrollbar-width:none">
+      <button class="stab" id="tab-0" onclick="goSection(0)">— 1</button>
+      <button class="stab" id="tab-1" onclick="goSection(1)">— 2</button>
+      <button class="stab" id="tab-2" onclick="goSection(2)">— 3</button>
+      <button class="stab" id="tab-3" onclick="goSection(3)">— 4</button>
+    </div>
+  </div>
+
+  <main class="max-w-2xl mx-auto px-4 py-5 pb-32" id="main-content"></main>
+
+  <div id="bottom-nav" class="fixed bottom-0 inset-x-0 bg-white/90 backdrop-blur-md border-t border-ios-sep z-50">
+    <div class="max-w-2xl mx-auto px-4 py-3 flex gap-3">
+      <button id="btn-prev" onclick="prevSection()" class="flex-1 py-3 rounded-2xl font-semibold text-sm border-2 border-ios-sep text-ios-second hover:bg-gray-50 transition-all">← Anterior</button>
+      <button id="btn-next" onclick="nextSection()" class="flex-1 py-3 rounded-2xl font-semibold text-sm bg-ios-blue text-white hover:bg-blue-600 transition-all active:scale-95 shadow-md shadow-blue-200">Siguiente →</button>
+      <button id="btn-submit" onclick="confirmSubmit()" style="display:none" class="flex-1 py-3 rounded-2xl font-semibold text-sm bg-ios-green text-white hover:bg-green-600 transition-all active:scale-95 shadow-md shadow-green-200">Entregar Actividad</button>
+    </div>
+  </div>
+</div>
+
+<div id="results-overlay" style="display:none" class="fixed inset-0 z-[100] bg-ios-bg overflow-y-auto">
+  <div class="max-w-2xl mx-auto px-4 py-8">
+
+    <div id="annul-banner" style="display:none" class="card p-5 border-2 border-red-400 bg-red-50 mb-4"></div>
+
+    <div class="card p-7 text-center mb-4">
+      <p class="text-xs font-semibold tracking-widest text-ios-second uppercase mb-3">Resultado del Examen Final</p>
+      <div class="score-ring w-36 h-36 rounded-full mx-auto mb-4 flex flex-col items-center justify-center border-8" id="score-ring">
+        <span class="text-4xl font-bold" id="score-num">--</span>
+        <span class="text-sm text-ios-second">/32</span>
+      </div>
+      <p class="text-2xl font-bold mb-1" id="score-label">--</p>
+      <p class="text-ios-second text-sm mb-3" id="score-sub">--</p>
+      <div class="bg-gray-50 rounded-xl p-3 grid grid-cols-3 gap-2 text-sm">
+        <div><p class="text-xs text-ios-second">Estudiante</p><p class="font-semibold text-gray-800 truncate" id="res-nombre">--</p></div>
+        <div><p class="text-xs text-ios-second">Código</p><p class="font-semibold text-gray-800" id="res-codigo">--</p></div>
+        <div><p class="text-xs text-ios-second">Nivel</p><p class="font-semibold" id="res-grade">--</p></div>
+      </div>
+      <div class="mt-3 bg-blue-50 border border-blue-200 rounded-xl p-3">
+        <p class="text-xs text-ios-second">Código de verificación (debe coincidir con el PDF entregado)</p>
+        <p class="font-bold text-ios-blue tracking-wide text-sm" id="res-veriCode">--</p>
+      </div>
+    </div>
+
+    <div class="card p-5 mb-4">
+      <h2 class="font-bold text-gray-800 mb-3">Resultado por sección</h2>
+      <div id="breakdown" class="space-y-3"></div>
+    </div>
+
+    <div class="card p-5 mb-4">
+      <h2 class="font-bold text-gray-800 mb-3">Análisis de Resultados por Tema</h2>
+      <p class="text-xs text-ios-second mb-4">Basado en tus respuestas, estas son las áreas con mayor y menor dominio en esta evaluación:</p>
+      <div id="insights-container" class="insights-grid"></div>
+      <div class="mt-4 p-3 bg-blue-50 rounded-lg text-xs text-blue-700">
+        <p class="font-semibold mb-1">Retroalimentación completa disponible:</p>
+        <p>Descarga el PDF para ver cada pregunta con tu respuesta, la respuesta correcta y la justificación detallada de todas las opciones.</p>
+      </div>
+    </div>
+
+    <div class="card p-5 border-2 border-red-300 bg-red-50 mb-4">
+      <p class="font-bold text-red-800 text-sm mb-2 flex items-center gap-1.5"><span class="text-lg">&#128196;</span> Solo se califica el PDF con tu código</p>
+      <ol class="text-xs text-red-700 leading-relaxed list-decimal pl-4 space-y-1">
+        <li>Toca el botón azul de abajo. Se abrirá el cuadro de impresión del navegador.</li>
+        <li>En "Destino", elige <strong>Guardar como PDF</strong> (no imprimas en papel).</li>
+        <li>Sube ese archivo PDF, tal cual, a la tarea correspondiente en Moodle.</li>
+      </ol>
+      <p class="text-xs text-red-800 font-bold mt-2">Cualquier otro formato (captura de pantalla, Word, HTML) o un PDF sin tu código de verificación NO será calificado.</p>
+    </div>
+
+    <button onclick="downloadPDF()" class="w-full py-4 rounded-2xl bg-ios-blue text-white font-bold text-sm mb-4 hover:bg-blue-600 transition-all active:scale-95 shadow-md shadow-blue-200">
+      Descargar Retroalimentación Completa (PDF)
+    </button>
+
+    <div class="card p-5 border-2 border-green-300 bg-green-50 mb-4">
+      <div class="flex gap-3 items-start">
+        <span class="text-2xl flex-shrink-0">&#10003;</span>
+        <div>
+          <p class="font-bold text-green-800 text-sm mb-2">Evaluación entregada correctamente</p>
+          <p class="text-xs text-green-700 leading-relaxed">
+            Tu Examen Final de Programación Web II ha sido completado y quedó registrado con tu correo: este es tu <strong>único intento</strong> y esta nota es definitiva. Descarga la retroalimentación completa para revisar cada pregunta, tu respuesta y la justificación de la respuesta correcta y por que las otras opciones son incorrectas.
+          </p>
+          <p class="text-xs text-green-600 font-semibold mt-2">
+            Sube el PDF descargado a Moodle antes del plazo establecido; sin ese PDF, la evaluación no se califica.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <p class="text-center text-xs text-ios-second pb-4">
+      SIS-0301 · Programación Web II · UPDS 2026 · Docente: Ing. M.Sc. Jimmy Nataniel Requena Llorentty
+    </p>
+  </div>
+</div>
+
+<script>
+const LOGO_DATA_URI = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAMAAAAL34HQAAAC+lBMVEUAAADkBCHkBSHlCiPmHyo4YpMVP4rlByLlByIYQIrlCSQiSJAZRY4YQYsaP4oyTZMIbKzmFycYQIvlCiMUQYsURI4SQYvlDSUQQozlCyTkByIgR4/lDyQGbq4UVpvmGisPRI4ZQItSaKPmHCkPQowfP4oWQIrlEicQQ40PQowZPokWRY/lDSTmFyeLmsIORI0xUZUMWJ0MW5/lDyQik1blDiMXPonlEyblDSMaPYgdR48PSZLmEyYcPYkiP4oXj0/mGyrlEiYSSJA3nmboKT4HV5xQq3sSRI0MSpIKXqENTZQOWp7lDCMJZ6hrfrANikgQT5Zxg7QJiERruI9hs4fqOVCtuNQGXaA3VpjmFCv8+flJYp8KZaczUJQMVpt4vplWbaVGXZwLUJYNikhXroBFXZwQUJflCiPuX3F1vZfrR1z72t4GU5gqR49yhLRjd6wPU5koU5c0aKUHba0dO4dDpHF7v5t3ibdFpXKGt6tpfK8Xj09rkaZrqJnzhpTxd4ZSrHwEaKkHUpdltYsdR49pfK9UaqMKZaeElL4LYaRJaKTwbn6Flb7tVGhoe69pto7wcoPrR1xRrHvtUmZVrn8nl1yPncNxu5Q2nmfvZnhMZKDygY+WpMcQYKP///////9leq6YzrFZbqff8OiCw6B6i7joITseklUudK3S1+e6w9ocklPF49P///////8eO4cAhD4PQozlFSbkDCMHh0MjP4oKRY3mIivkBCEAcbAHR48nQ4wAWp4DTpUAZ6cESJAMikflCiPmHSpDX54sSI/lDSkRjEs4V5kklllGZ6TT6t63wNlyhLQEYaMbQ44cPooYPom53sqap8kVT5g5oGrw8/bm6fIDVZoTXaFAWZkYSJMcklTc4e3d7+XF49OWzLBGpnPoIzzByd6TocZ+j7qg0beKx6dYr4Ho9O7M0uQvm2LU2uis18FidqtbcKhpfK8PZ6mFxKP4t7+Flb5/wZ6kr871nKj95un6y9HvZXfmGDItfrVRebDuWm2WMbQNAAAAr3RSTlMAsD1KuwfeNCJlDw8gljn+vNl5GaBJswfVVUQpzP7+xooZ/vPvwauLcveGMvS//uTVzYx7DuTKm3BXQsawjnH+6ahQOBTe1bukopV27eOmlIA4IP7+/v3y6mL858G6rqygmYlsamJbLiz+/fv3tJGAZv768O3s5dfCV1NTIxj+/f336+rZ1s3KvrH14N/Vx8fAtaaZj42Kh3xKPuznnTQc9PLw3oFpSOLe2Ma3mJB5WTS29wAADyRJREFUeNrs2VloE0EYB/APJXhEDSgiIlQNqKAQFAqiolHUKD5Ek9SildpqW7EVLYpt1XqBB+J933jf185DCsGAJCQmMYlCYlqNaZvU5tDYw9rWW3B2d7YbRaK0rpsHfy/tw8fMl5ndYf4J/Pfff50x/fBFj+fi4emQUo5GnTU1r169Ch6FFJLjizR4amudNc5gDqSM9Q6TwxHf2tLg8QQz1kOqWIccCCFTIBQNtunWQYpIVyrjiGGLZcSU6ZAatHgLEaEMmLSQGqbbkJ6DTLZUOSTSfQjpTQw9Qr5U2URQIUxvwmuFqSBV5OtRB0c+pIzbiBNLmfMBS1+ntOEVs4WiB1LmyWKcUG2N1raVnoBUo71zWQsiGjIlN7d/P/gj/frn5k4ZAsLTlLmqKisrX5dtgN/asPclXfuyTAMCu3rh5es31dVVVVXeVfAbq9yktlpxFQS1Xt7cqvC66OlciuM/vY4/vYTH/eGO2vB6ENIOym+U+S3N7a6Xme0XNvEtnVS1RCItqpN8a5suMbWP3Li23bsDBDTRarRTFFVhtbu9CoW8GIj8bR76ylxZWbstH4hiyipjav1hb6vCMhGEM5qSyyiWxe32ZwMrJ+Tx1DqZ27yzLQdY2VQjRcjdbtlkEM5KSl5BEUZZeCzpKlAYDLKXeaezQUf6GmuUUxyrVb4ShJONN4VDUd5F7GsQR76AI+6L0Xf52kgkxD7ei3ApX9uaDcJZQq8SC0/l3kmuNbY4QnpbwBGKRiLRaEwFtJ34IyTULgHhFFRQZDL6H5kaMG0AOWyIYQpktOkKMwJawNRUYq28AIQjXUQlsGsAy0OODNTBF8sIoTzANHYqwSIpCAgvV4fmXKDNRY4Y4tkccTSX23FOhbsABLXEShrz1++XkLYSAgbNZ2Lbkuw0cgeEVw0CK5ZbLBZ3c329WgKkLTZgdLRmC8wFhkSNa+VufPKuAsFtXLXDlVWm1gCRpyd9cdFH78gDQqPe8bqybNVG+CfOnwOe1ocQ1xjZRS3wzp0DcaxDP0mNlDFdiRIFtk4H4XU7cvBI90GQzEkT4oXaTkJS3fGA3aBrlu/5+OFD1oczpyCZow6lHtH0vmDbUUjm1Bl6wBV7lnepq6L37959XLFixebkfeWrfKFQS6Qw0rItP3lX89kBP57pSl/7DHV187/hkd7vSb6PkisHSmuySg9ckUAyg/aZ8YCf6AH3QafN+PzZbDCYP3/bvKVoMBAbc89mZp7NPQ0/u3cXfnZajWv35m4Eoru5zmAwPKz7tHnL/AHQWT0MRQZGXVHdeC7OeN9U0ykrUy2B35Co26urcC0fkkaZ53MDfu7R+bfQ8NBMw+NsmQaMXc04yrzGnVW59kp+01VZmI49uLa6fRcwpvEDfuvWhdUyPGSYDXWj2JAlkzc1uhX0dK76XZDUropGXFtP12a2HmdXix+wqPOr1Zt+Esx4EDzaNcCkuykLnXss4UxXu7dJAzxteV5euRZ4Gj/lxxd+u7w10+X1XpICdu2hgWmM3sYZ0GmHDMRn9sUpoGQyNjM8UoRb5UsSTohgjbOmNqjKT7hg+61sbROu9RcAbaiBqDsEnTdjqNmAmYu2sMdMX6oRT0Uma5aN4JKqqoWNY5Wvoge4TDvC2EwRssZmY1/2IJzKDPjw254Z0AUzDs2f/+nT5oPLuUBmp3MM4V1AjoxtMTrzMEnRGSklx8GCH2rdJJAtxwNuwQPOgK4ZMHjFwp6JgQxHBhalYAOZpBTpdLrCKBsUG1pKgQQyysjXhrOB6Lkwa+EA+KuWMGHGSuJM036gnbChuEkZcPhiwYYGTzAYOgG0/XR4s3K1jUIGstMyJjBgzN9ioJUgZRyxQVEXDba0ZZQArbgisVZ2GgS0k+IZ2ZA13WTy6RHL5CvU6WLs7xjSBRRPthOENMTKzxQuADYnxhNyojIUi7M5EQqMFMfiHgKC2rDAWsE2VV/MJR+bD+edDvqQniSfYjtb61coNoDANPubmhSu+vq9eCY+J/IQjv5zuc+wo6nJi2t3aUB4fXrdykr49vhYQh5j+jI5jiV8K30zq1cfEEG5DWEmm81GEpk+Xg7iSy9BDGalGCUSSAGH9egHysMgptGTyXJdR4m2lqSDmKRr+5P86tDzSxXN4NLrvO0gislr+5G+SgIB5oc7X2FkG9fV8LTVIArpgo4LV87WUMzjjLYV5mwCYnHaAhBHX8sYINLLj13OOlaezvectjobxDHBMhJ4589Dgtlp9l4gkkdrJfBr855bR4BYFlFT4JeGPbePlYJYslf/ekn6pqXt7geimfPl/pBfd/W1L4hn4Jdnk4bDj8YMm5WWZhkLYrrx9vHMpVLgTRi7Zs3zp0a8hWJa9uXBg3F9pnAPvmTkI/uLp08oay8Q13f265hFjSCKA/hrPJBbXRC1ORQUVogWWVMIKlpcc+RCIN3dJ7jqhCh+gkMI5DvkM/yxiBBXuWIDy0CcXViImyXdpZVsH4vMGm49Nulnivy63erPm8ebNx9+vcvPLAz+pDIY34cupl2S7WXPdOqAEZ9aw3ZtDpz0SL4W2+0gGIOmDu4CRo0U0GVIuC4+mqQEjSHBAWdEajDtJ8UCK5AaSsyCbcWpOAd0Jd4Xsa45zXUA8JADkD8cEhlqxsUKfQANUkjBgkhVDYETUsiZzblfDQIXUGJsPcrtQxErCoBzUom5rwabqMKRJaUUJ1FU+eRjSIq58H2/iiap4TQ7aFz0hVDg6JAKsoYO8EO/R5HvA9BIurzJdMAN/UO/V+JUCvR8/r0NwXV5KIaW70JQoOdNVkeaIz1WSX/YwSgYls2Y49jMgmBLv6yb377WIVJow0FxNCp2ELNPSbLGz+/6k1YqQ/gsf2s2fjwABXo0hcAGJJvxxYGbzIMaYkz+c6xjAXormRaHM7wm6Tqe5x1jaK74VOAMyfC88bHDM3EsR4Grpyyqk6PEjHvebCh/Oy3O506XEqXr8Xw+f1YkyZqLxThDRzVzshDKJFd2uZylVvpJdblcZEmqs/v7dGXOJ0H8U6qb9bpPKbV2sH5OMuXvtttbjdIut9sCyXNzt1pt+xlKO71dibCy9FabVfst/e1ys7nKkCzaizct+pf21etX9N9v9shY5VEgisIn44AynViIIshiYaOVhKSwiJDSF8gT5P3mFrd2nmzPGPf/U2yzsMWy5IPkTK73nMicDx/+mMRkKIxxZc2DM3XJSZFFhTHPzOzgpQVQJFWVlHTUDvUxQzwBr6UUkcPgvoyMP1L5P/GrBsO+DE/D6TubXFGJZG6TszOyOU7STGRCukmdiGzb1mBXWd19lfMgI1LZMpyFDMy/Up/gUuQEshtEvoyFe6VeYTYxSDbZKsAI4RLQCEPf8Z6v5X3mvPeL8d5xkqLxJ/T+jIRPsqyg5pi8T2quX8cTUs6R++V69jMw+sFfwKX1cYoPCI3lxQ/UM67eV+6VOu+pWGhYAOOHx+K9QcrfQ4E3gvK1VDMXNGivwXGSYtKubPWCRDXP8556W3Ltinun2o0JUg18LZ1w0RxFp1HiErKgCRDPoW/0Ru2WhkYXU3u9lQ1TyxsNXQmjHcpOK6bYXPvflijSyCDiIJLCDTJJvG1Om6ankiEBngurW8tUJJY4oZc8fgqRiktn0F0DOAzXQyu4mHpnKpWln8uVZiMDsEoSky4s842V1997f3e86dz/KhGzX32zdwFCzdn0jHqcYyfPo8QJrW+pkXkv7EH3UWJlSsQZjzPcPj/tqTRF2lgiPz6hKWLwjdWQqzZwIVSm+1UiqqDa712wxJaaY9aQ1iHYlvd/lNjRMKUhtGPOIZdvgYtHiYfeotG4PfWhyuKLoM3YaCgMDao3N+ttHDu2+01hO+3aJ1w71phs69BaBmC2YwHUNsKLsAuy0fbomdNUeNq2wMxHy4SHtSx3tHViySUDobHdlTNk1k7ulWrteEdlxxL31lZmN6Rla69Az80P/xWnfwh8+Dv8+NmOFau4DQTR10ggJAshJCMQB2dwhB0XxlcYziGN4PDZJuAujXGR4qorDvIFl+bwR+Qj1CzcImm/4CDd/U7erOI4Jk3KFPfAM7Nv3j6Pl3WzgYN/hx8McIQzGJxtJRH4+Cf8LXQt5j1rv1iOq+pHFksptAcUkoHYdd8DPdd9ByBx3Y9Mk/5QnkOWExDX8zHruYcjUiGqrCNimvSZ550B+sziJt3c2rgfz35TJRB6QGsaWRRAKDkBppKBUVVxrIR1DyhsTOlmMfWBuCtF1SFn19qVIDKpOH6vS/6YQnHzgPBoMz8bS6msnymlCjhTpcZFj1GVCJWqVIZFxSRjKXUJJIqKFIVSHCtj3YuXpGIEY6WGSTIklf9+0XH9nF5ySKm4qATIK+sT0zwXN09sqOlJfI8TlNbUzbUeItVax0Aw1LqHUOupVsGlVkwcy8oSTWRO0QkshV5cOvC0VimwoJsHi0sy/XjkeRMABXfRj9VS6znQ1/oD3UScc0sC+FNKcIIy5pImxmj/2hjlkPog7y4hgzbx0mSZkbGsLKHMmKQwpoeUdYB0RKTSnoKYGhPDIhwbQmcj1s7Q6HRojGd9VOCwJp8IszDsAbg1Znx+tz7yyJmC66oaguhX1RIh+WlVDKskO7tbc/4nXLlbaSV8wchOzMsNgtoYHUrWBJXSdcW1LxNS7vGLHOvm2Tuco7t1OME0jZxW0zT+ddMYX06raXha5PvNuGm8rDEcy8puGYtGsEbKmKOvxUDa3Wk1zQhHhJd0aobWMIuXTXM/sBYf+LmFLXlalJSyEOUJr3X9BZjV9TekdV1vgfy+rtcIyW9J3Ps39SvHsrJbRq6JNSavEoGtdDw+4NwBJTkPFsubb+yuyTtUWliLxWt9z+eeFNbtAQGbnFFcZzjhpW1nu5u2bfcA08t+9ZkxRdi2V7k0yb4AGy6BlcSSbLsGZqL+sv8s3IDx834vMYDFnuW2pOYG65ZKQszsNiFh3R46m9lKJtjihPa5w8wHyseuvvgOhM/PV/jUhZZjsaLRMUoK2bV4fGD/8Ve9QYfF0WsjLocgCK64mABbkrLd+nDnhG0rPOAPPEWC1cYBKDl8urj4+kQxwija4CqKUhyiJ+BBllxLdA5RtAWQr6i++PR9AiKNvnLrrsQR6c4Sd5jsouiORNBln2k3AMSt41f2S98eoN7whv8JPwG+RVJ5t6eocQAAAABJRU5ErkJggg==';
+// =====================================================================================
+// REEMPLAZAR ESTE BLOQUE COMPLETO con las preguntas reales de la materia.
+// Reglas obligatorias (ver references/question-writing-guide.md para el detalle):
+//  - 4 secciones (bloques), una por cada tema grande del avance/silabo indicado.
+//  - Cada sección necesita un POOL de al menos 8 preguntas (aquí solo hay 2-3 de
+//    ejemplo por brevedad); QUESTIONS_PER_SECTION elige un subconjunto al azar de
+//    ese pool en cada intento, para que el examen varie entre estudiantes.
+//  - Preguntas de escenario (2-4 lineas de contexto aplicado), nunca definiciones
+//    sueltas. Las opciones incorrectas deben ser trampas plausibles, no absurdas.
+//  - El campo "just" explica por que la correcta es correcta Y por que cada
+//    incorrecta falla especificamente (no un parrafo generico).
+//  - Sin tildes ni caracteres acentuados en los strings de preguntas (se usa asi en
+//    todo el archivo por convención/compatibilidad); la ñ SI se conserva cuando
+//    cambia el significado de la palabra (año, diseño, etc.).
+//  - NUNCA uses un apostrofe (') dentro del texto: las cadenas usan comillas
+//    simples como delimitador JS. Si necesitas comillas dentro del texto, usa
+//    comillas dobles rectas (") -- nunca seas literal con ' en contracciones etc.
+// =====================================================================================
+const SECTIONS = [
+ {
+  "id": 0,
+  "title": "API REST y Flask en capas",
+  "icon": "🌐",
+  "color": "blue",
+  "type": "multiple",
+  "desc": "Contrato de la API, códigos HTTP, Blueprints en 3 capas, Swagger, CORS y errores típicos de Flask",
+  "questions": [
+   {
+    "text": "El equipo EcoTareas ya tiene su API Flask en tres capas. Durante la revisión como \"equipo de Frontend\" (Lab 2, paso 7) se envían dos peticiones a <code class=\"ic\">POST /api/tareas</code>: la primera con el cuerpo <code class=\"ic\">{\"titulo\": 123}</code> y la segunda con <code class=\"ic\">{\"titulo\": \"comprar spam\"}</code> (\"spam\" está en la lista de palabras prohibidas por la política de uso). Según el contrato del curso, ¿qué códigos debe devolver la API en cada caso?",
+    "opts": [
+     "400 para la primera (error de formato: el título no es texto) y 422 para la segunda (forma válida que incumple una regla de negocio).",
+     "422 para la primera, porque el servidor no puede procesar un número donde espera texto, y 400 para la segunda, porque el cliente envió una palabra que la política de uso no admite.",
+     "400 para ambas: cualquier error provocado por el cliente es un Bad Request, y separar un 422 solo agrega complejidad al contrato sin beneficio real para el Frontend (KISS).",
+     "200 para ambas, con un campo <code class=\"ic\">{\"error\": \"...\"}</code> en el cuerpo, para que el Frontend siempre pueda leer el JSON sin entrar al catch."
+    ],
+    "correct": 0,
+    "just": "Respuesta correcta: el Lab 2 define 400 como error de FORMATO (el título no es texto, no vino o está vacío) y 422 como un dato bien escrito que incumple una REGLA DE NEGOCIO (palabra prohibida, longitud mínima), y el Mini Task Manager lo implementa igual: la capa API responde 400 y el servicio lanza 422. La opción que invierte los códigos confunde justamente el concepto central del Lab 2. Responder 400 a todo borra la distinción que permite al Frontend reaccionar distinto (marcar el campo ante 400, explicar la regla ante 422); KISS no autoriza romper el contrato. Devolver siempre 200 con {error} es el \"error clásico del principiante\" que cita el material: el Frontend mira primero el código y creería que todo salió bien."
+   },
+   {
+    "text": "Un estudiante copia tal cual el endpoint de actualización de la Guía API REST con Flask:<span class=\"codeblk\">@app.route(\"/api/users/&lt;int:user_id&gt;\", methods=[\"PUT\"])\ndef actualizar_usuario(user_id):\n    data = request.get_json()\n    for user in users:\n        if user[\"id\"] == user_id:\n            user[\"nombre\"] = data.get(\"nombre\", user[\"nombre\"])\n            user[\"email\"] = data.get(\"email\", user[\"email\"])\n            user[\"rol\"] = data.get(\"rol\", user[\"rol\"])\n            return jsonify(user)\n    return jsonify({\"error\": \"Usuario no encontrado\"}), 404</span>Juan (rol \"usuario\") abre Thunder Client y envía <code class=\"ic\">PUT /api/users/2</code> con el cuerpo <code class=\"ic\">{\"rol\": \"admin\"}</code>. ¿Cuál es el defecto más grave de este endpoint según los desafíos de seguridad del Lab 2?",
+    "opts": [
+     "Asignación masiva (mass assignment): acepta del cliente un campo sensible como rol, y Juan se convierte en administrador.",
+     "Es un problema semántico más que de seguridad: debería llamarse PATCH porque actualiza campos parciales, y como verifica que el usuario exista antes de modificarlo, el endpoint es seguro.",
+     "Falta declarar <code class=\"ic\">global users</code> al inicio de la función; sin esa línea Python trabaja sobre una copia local de la lista y el cambio del diccionario nunca llega a la lista original.",
+     "Basta con ocultar el campo rol en el formulario de React: si la interfaz no lo muestra, ningún usuario sabrá que existe ni podrá enviarlo."
+    ],
+    "correct": 0,
+    "just": "Respuesta correcta: el Lab 2 exige que el contrato declare los únicos campos aceptados y que \"cualquier otro (id, created_at, is_admin...) se ignora\" (anti mass-assignment); este código copia rol desde el cuerpo sin ninguna verificación de permisos. Que debería ser PATCH es una observación válida de vocabulario REST, pero no es el defecto más grave ni convierte al endpoint en seguro. Lo de global es falso: global solo hace falta cuando se REASIGNA el nombre (como en el DELETE con la comprensión de lista); aquí se modifica un diccionario existente dentro de la lista. Ocultarlo en React no protege nada: el propio escenario usa Thunder Client y el Lab 3 insiste en que el Frontend nunca es la barrera de seguridad."
+   },
+   {
+    "text": "La API Flask de un equipo respeta el contrato del Lab 2 y en el DELETE responde <code class=\"ic\">return \"\", 204</code>. Su componente de React tiene este manejador:<span class=\"codeblk\">async function eliminar(id) {\n  try {\n    const res = await fetch(`/api/tareas/${id}`, { method: \"DELETE\" });\n    const data = await res.json();\n    if (!res.ok) throw new Error(data.error);\n    setTareas(prev =&gt; prev.filter(t =&gt; t.id !== id));\n  } catch (e) {\n    setError(\"No se pudo eliminar la tarea\");\n  }\n}</span>Al probarlo, la tarea SÍ desaparece de la base de datos, pero la pantalla muestra \"No se pudo eliminar la tarea\" y la lista no cambia hasta recargar. ¿Qué ocurre?",
+    "opts": [
+     "res.json() lanza un error porque la respuesta 204 no tiene cuerpo; el código salta al catch aunque el borrado fue exitoso.",
+     "fetch rechaza la promesa porque 204 no es 200 OK; hay que cambiar la API para que devuelva 200 con un mensaje de confirmación, como hace la Guía de Flask en su endpoint DELETE.",
+     "El navegador bloquea las respuestas DELETE sin cuerpo por la política CORS, que exige un Content-Type en toda respuesta; hay que agregar CORS(app) en Flask.",
+     "filter muta el arreglo original y React no detecta el cambio de referencia; hay que usar splice sobre prev para eliminar la tarea y devolver el mismo arreglo."
+    ],
+    "correct": 0,
+    "just": "Respuesta correcta: fetch resuelve la promesa con cualquier código HTTP (res.ok es verdadero entre 200 y 299, incluido 204); el problema es interpretar como JSON un cuerpo vacío, lo que lanza un error y termina en el catch. Por eso el Lab 3 centraliza handle(res): si 204, devuelve null. La opción de que fetch rechaza la promesa es falsa (solo la rechaza ante un fallo de red) y cambiar el contrato para tapar un bug del cliente es la solución equivocada. CORS no aplica: la petición llegó y la tarea se borró. filter NO muta: crea un arreglo nuevo, exactamente la forma inmutable que enseña el Lab 3; splice sí mutaría."
+   },
+   {
+    "text": "El contrato de un equipo dice que TODO error tiene la forma <code class=\"ic\">{\"error\": \"...\", \"field\": \"...\"}</code>. En Flask tienen la ruta <code class=\"ic\">@tareas_bp.get(\"/&lt;int:tarea_id&gt;\")</code> y, dentro de la función, devuelven <code class=\"ic\">jsonify({\"error\": \"Tarea no encontrada\"}), 404</code> cuando no existe. Al probar <code class=\"ic\">GET /api/tareas/abc</code> reciben un 404 pero con una página HTML y no con su JSON. ¿Por qué?",
+    "opts": [
+     "El convertidor &lt;int:&gt; no coincide con \"abc\" y Flask nunca ejecuta la función: responde su 404 por defecto. Falta un @app.errorhandler(404) que devuelva JSON.",
+     "La función sí se ejecuta, pero jsonify no puede serializar el texto \"abc\" recibido como tarea_id y Flask, al fallar la serialización, recurre a su plantilla HTML de error con código 404.",
+     "Flask convierte \"abc\" a 0 con el convertidor int y, como no existe la tarea 0 en la base, el 404 que llega es el del driver de PostgreSQL y no el de la función.",
+     "Es el comportamiento correcto de REST: un identificador mal escrito siempre produce una página HTML, para que el cliente distinga un error de URL de un 404 de negocio."
+    ],
+    "correct": 0,
+    "just": "Respuesta correcta: en la Guía de Flask, &lt;int:user_id> indica que ese segmento debe ser entero; si no lo es, la regla de URL no coincide y la función nunca se invoca, de modo que responde el manejador por defecto de Flask (HTML). La solución es registrar un @app.errorhandler(404) que devuelva el formato único de error del contrato (el material de Flask del curso muestra ese patrón con @app.errorhandler). La función no se ejecuta, así que jsonify no participa. Flask no convierte \"abc\" a 0: simplemente no hay coincidencia. Y ni REST ni el contrato piden HTML: el Lab 2 exige un formato único de error para que el Frontend escriba una sola función de manejo."
+   },
+   {
+    "text": "Al pasar del app.py monolítico a Blueprints (Lab B1), un integrante escribe:<span class=\"codeblk\"># app/tareas/routes.py\ntareas_bp = Blueprint(\"tareas\", __name__, url_prefix=\"/api/tareas\")\n\n@tareas_bp.get(\"/api/tareas\")\ndef listar():\n    return jsonify(services.listar_tareas()), 200\n\n# app/__init__.py  (dentro de create_app)\napp.register_blueprint(tareas_bp)</span>El checkpoint <code class=\"ic\">curl GET /api/tareas</code> devuelve 404. ¿Cuál es la causa?",
+    "opts": [
+     "La URL real es /api/tareas/api/tareas: el url_prefix se antepone a la ruta del decorador, que debería ser relativa (<code class=\"ic\">@tareas_bp.get('')</code>).",
+     "El Blueprint no queda registrado: register_blueprint solo tiene efecto si se llama en el nivel superior del módulo, fuera de create_app(), antes de crear la instancia de Flask.",
+     "<code class=\"ic\">@tareas_bp.get</code> no existe en Flask; los Blueprints solo aceptan <code class=\"ic\">@tareas_bp.route(\"/api/tareas\", methods=[\"GET\"])</code> y cualquier otro decorador se ignora en silencio.",
+     "Falta CORS(app): sin CORS, Flask no expone las rutas de los Blueprints hacia afuera y responde 404."
+    ],
+    "correct": 0,
+    "just": "Respuesta correcta: Flask antepone el url_prefix del Blueprint a cada ruta que se declara en él, por lo que la URL real queda duplicada y /api/tareas no coincide con nada. El Lab B1 usa justamente @tareas_bp.get('') y @tareas_bp.post('') con el prefijo en el Blueprint. El Blueprint sí está registrado, y registrarlo dentro de create_app() es precisamente el patrón application factory del laboratorio. Los atajos .get/.post existen desde Flask 2.0 y el Lab B1 los usa. CORS es una restricción del NAVEGADOR sobre peticiones entre orígenes; no hace que Flask devuelva 404, y curl ni siquiera aplica CORS."
+   },
+   {
+    "text": "Revisando el código generado por la IA para el Blueprint de tareas, el Retador encuentra esto en routes.py:<span class=\"codeblk\">from . import repository\n\n@tareas_bp.post(\"\")\ndef crear():\n    data = request.get_json()\n    nueva = repository.insertar(data[\"titulo\"], data.get(\"responsable\"))\n    return jsonify(nueva), 201</span>El código \"funciona\" en la prueba manual. ¿Qué debería decidir el equipo según el Lab B1 y el principio AI-DLC?",
+    "opts": [
+     "Rechazarlo y pedir a la IA la capa de servicio: routes.py nunca llama directo a repository.py; las reglas viven en services.py.",
+     "Aceptarlo: con solo dos líneas es más simple (KISS), y una capa de servicio recién se justifica cuando el recurso acumula más de diez reglas de negocio distintas que coordinar.",
+     "Aceptarlo, pero mover la validación del título al componente de React para no duplicar lógica en el servidor y dar respuesta inmediata al usuario.",
+     "Aceptarlo, porque en Flask las capas son opcionales: la separación en routes, services y repository es una convención de Express que el Lab B1 solo recomienda."
+    ],
+    "correct": 0,
+    "just": "Respuesta correcta: la \"regla de oro\" del Lab B1 es que routes.py nunca llama a repository.py sin pasar por services.py, y el laboratorio indica que si la IA devuelve todo junto hay que volver a pedirle la capa de servicio y no aceptarlo. Además, data[\"titulo\"] sin verificación produce un KeyError (500) si el campo no viene. KISS no justifica mezclar responsabilidades: el problema del \"app.py de 800 líneas\" nace exactamente así. Mover la validación a React la deja evitable con curl (Lab 3: el Frontend no es barrera). Y la separación en capas es un patrón de arquitectura, no de un framework: \"la arquitectura permanece, la tecnología cambia\"."
+   },
+   {
+    "text": "Con Flask corriendo en el puerto 5000, todas las pruebas de Thunder Client (GET, POST, PUT y DELETE) pasan. Sin embargo, al abrir el frontend React en http://localhost:5173, la consola del navegador muestra un error de CORS al pedir <code class=\"ic\">http://localhost:5000/api/tareas</code>. ¿Cuál es la explicación y una solución coherente con el material?",
+    "opts": [
+     "CORS lo aplica el NAVEGADOR entre orígenes distintos (otro puerto es otro origen) y Thunder Client no; se resuelve con CORS(app) o con el proxy de Vite.",
+     "Flask identifica que la petición viene de React por el encabezado User-Agent y la rechaza por seguridad; hay que configurar fetch para que envíe el mismo User-Agent que usa Thunder Client.",
+     "Desde el puerto 5173 el navegador no puede hacer peticiones GET a otro puerto; hay que cambiar las lecturas a POST, que sí se permiten entre orígenes.",
+     "Thunder Client responde con una copia en caché de la API; en realidad Flask está caído y hay que reiniciarlo con python app.py."
+    ],
+    "correct": 0,
+    "just": "Respuesta correcta: la Guía de Flask explica que sin CORS(app) el navegador bloquea las peticiones de un frontend que corre en otro dominio o puerto, y el Lab F4 muestra la alternativa del proxy de Vite (server.proxy '/api' hacia el backend), que evita el problema porque el navegador habla con su propio origen. El User-Agent no tiene relación con CORS. Cambiar GET por POST rompe la semántica REST (el método es el verbo) y no resuelve nada: CORS aplica a cualquier método. Thunder Client hace peticiones reales, no usa caché de la API; si las pruebas pasan, Flask está arriba."
+   },
+   {
+    "text": "Un endpoint documentado con Flasgger no aparece en /docs:<span class=\"codeblk\">@users_bp.route('', methods=['GET'])\ndef get_users():\n    usuarios, error = user_service.obtener_todos_usuarios()\n    \"\"\"\n    Listar todos los usuarios\n    ---\n    tags:\n      - Users\n    responses:\n      200:\n        description: Lista de usuarios\n    \"\"\"\n    return jsonify(usuarios), 200</span>Las tres comillas, el separador y la indentación de 2 espacios están bien. ¿Cuál es el error?",
+    "opts": [
+     "La cadena no está inmediatamente después de <code class=\"ic\">def get_users():</code>, así que Python no la toma como docstring y Flasgger no tiene nada que leer.",
+     "Falta la sección parameters, que Flasgger exige en todo endpoint para generar el formulario de prueba de /docs, incluso en un GET que no recibe ningún parámetro.",
+     "Los docstrings de Swagger deben escribirse con comillas simples triples; con comillas dobles triples Flasgger los interpreta como texto común.",
+     "Flasgger solo documenta rutas declaradas con @app.route; las de un Blueprint no aparecen en /docs hasta que se migran a la aplicación principal."
+    ],
+    "correct": 0,
+    "just": "Respuesta correcta: la guía \"Cómo documentar endpoints\" remarca como punto clave que el docstring va INMEDIATAMENTE después de def nombre_funcion():; si antes hay otra instrucción, la cadena deja de ser el __doc__ de la función. parameters solo se agrega \"si aplica\" (la plantilla GET mínima no lo lleva). La guía pide tres comillas dobles (\"\"\"), y el problema del ERROR 1 era usar una sola comilla, no el tipo de comilla. Y todos los ejemplos de la guía documentan rutas de un Blueprint (@users_bp.route), así que Flasgger sí las incluye."
+   },
+   {
+    "text": "En el Bloque 1 el Lab 2 decidió explícitamente NO usar OpenAPI/Swagger y escribir el contrato en Markdown con ejemplos. En el Bloque 3 (\"Backend seguro y API documentada\") el curso documenta los endpoints con docstrings de Flasgger. Un estudiante concluye que hay una contradicción y que el contrato-api.md \"ya no sirve\". ¿Cuál es la lectura correcta?",
+    "opts": [
+     "No hay contradicción: importa el CONTRATO (métodos, rutas, cuerpos, códigos), no su formato; la documentación generada debe coincidir 1:1 con él y con la API real.",
+     "Sí hay contradicción: al adoptar Swagger se debe borrar contrato-api.md, porque mantener dos documentos sobre la misma API siempre termina generando inconsistencias que el Frontend no puede resolver.",
+     "Swagger reemplaza al contrato porque se genera desde el código: si el código cambia, la documentación cambia sola y el Frontend no necesita enterarse.",
+     "El Lab 2 descartó OpenAPI por ser software propietario; Flasgger se permite solo porque es gratuito para estudiantes."
+    ],
+    "correct": 0,
+    "just": "Respuesta correcta: el Lab 2 dice textualmente que el CONTRATO es lo importante y el formato en que se escribe (Markdown u OpenAPI) es un detalle, y que OpenAPI quedaba para proyectos más grandes; además, el código de la API tiene que OBEDECER al contrato: cada ejemplo debe coincidir con lo que devuelve la API real. Borrar el contrato pierde la historia de cambios versionada con Git. Que el código cambie \"y el contrato se actualice solo\" es exactamente el riesgo de romper a los clientes sin avisar (un cambio incompatible requiere versión e historial). OpenAPI no es software propietario: es un formato abierto; el motivo del Lab 2 fue KISS/YAGNI."
+   },
+   {
+    "text": "El equipo de backend decide renombrar en la respuesta JSON el campo <code class=\"ic\">hecha</code> por <code class=\"ic\">completada</code> \"porque suena mejor\", y lo despliega sin avisar. En producción, el frontend React no muestra ningún error, pero TODAS las tareas aparecen sin marcar. ¿Qué explica el síntoma y qué debió hacerse?",
+    "opts": [
+     "Renombrar un campo que el cliente lee rompe el contrato: t.hecha pasa a ser undefined (falso), sin error visible. Debió versionarse y registrarse el cambio.",
+     "Es un cambio compatible, porque el tipo de dato del campo (booleano) no cambió; el síntoma se debe a la caché del navegador, que conserva el JSON anterior y se limpia con Ctrl+F5.",
+     "React lanza una excepción silenciosa cuando falta una prop esperada; basta con envolver la lista en un try/catch para recuperar el valor anterior.",
+     "El backend puede renombrar campos libremente siempre que responda 200, porque el contrato solo fija métodos y rutas, no nombres de campos."
+    ],
+    "correct": 0,
+    "just": "Respuesta correcta: el desafío de arquitectura del Lab 2 distingue agregar un campo opcional (compatible, los clientes viejos lo ignoran) de quitar o cambiar un campo que los clientes leen (rompe y requiere nueva versión; por eso contrato-api.md tiene un historial de cambios). En JavaScript, acceder a una propiedad inexistente devuelve undefined, que se evalúa como falso: el bug es silencioso. No es un tema de caché: el JSON nuevo sí llegó. React no lanza excepción por una prop ausente, simplemente recibe undefined. Y el contrato sí fija nombres de campos: el Lab 2 muestra el ejemplo \"¿el campo es status o state?\" como la ambigüedad que el contrato elimina."
+   },
+   {
+    "text": "Una cooperativa ya tiene 5 000 tareas registradas. El frontend hace <code class=\"ic\">GET /api/tareas</code>, recibe todas y en React aplica <code class=\"ic\">tareas.filter(t =&gt; !t.hecha)</code> para mostrar solo las pendientes. En celulares con datos móviles la pantalla tarda varios segundos. Según el desafío de sostenibilidad del Lab 2, ¿cuál es el diseño correcto?",
+    "opts": [
+     "Filtrar y limitar en el servidor con query params (<code class=\"ic\">GET /api/tareas?status=pending&amp;limit=50</code>) y dejarlo escrito en el contrato.",
+     "Crear el endpoint GET /api/tareas/pendientes/todas, porque en REST la ruta es el lugar adecuado para expresar un filtro y así el Frontend no necesita construir parámetros.",
+     "Cambiar a POST /api/tareas/filtrar y enviar el filtro en el cuerpo JSON, porque GET no admite parámetros y el cuerpo permite filtros más complejos.",
+     "Guardar las 5 000 tareas en localStorage la primera vez y filtrar siempre en el navegador, para no volver a consultar la API."
+    ],
+    "correct": 0,
+    "just": "Respuesta correcta: el Lab 2 pide diseñar GET /tasks para no devolver de más (limit por defecto 50, filtro ?status en el servidor, respuesta acotada) y escribirlo en el contrato AHORA, porque cambiarlo después obliga a romperlo. El vocabulario REST del curso dice que el path identifica CUÁL recurso y el query FILTRA u ordena una colección, así que meter el filtro en la ruta es un mal uso. POST /filtrar pone un verbo en la ruta y GET sí admite query params. localStorage descarga igual las 5 000 la primera vez y convierte al navegador en fuente de verdad de los datos, algo que el Lab 3 prohíbe."
+   },
+   {
+    "text": "Para desplegar en Render, un equipo deja <code class=\"ic\">app.run(debug=True, port=5000)</code> dentro de app.py \"para ver mejor los errores en producción\". ¿Qué recomienda el material del curso?",
+    "opts": [
+     "Quitar debug en producción (expone trazas internas y la consola de Werkzeug) y desplegar con gunicorn sobre wsgi.py, con errores sin datos internos.",
+     "Dejarlo: debug=True también activa la compresión gzip de las respuestas, reduce los bytes transferidos y mejora el puntaje de Performance de Lighthouse.",
+     "Dejarlo mientras el repositorio sea privado: las trazas del modo debug solo las ve quien tiene acceso al código en GitHub, no quien usa la API desde internet.",
+     "Dejarlo, porque Render ignora app.run() y el único riesgo real sería que el puerto 5000 no esté habilitado en el plan gratuito."
+    ],
+    "correct": 0,
+    "just": "Respuesta correcta: la Guía de Flask describe debug=True como modo de DESARROLLO (recarga automática y mensajes de error detallados), el Lab B1 define wsgi.py como punto de entrada para flask run y para gunicorn en Render, y el Lab 2 exige errores \"sin datos internos (nada de tasks.js:42)\". debug no tiene relación con gzip ni con Lighthouse (que además mide el frontend). La privacidad del repositorio no oculta nada: las trazas se muestran a quien hace la petición HTTP. Que Render no ejecute app.run() cuando se usa gunicorn es cierto en parte, pero entonces la opción no explica el riesgo real ni la práctica correcta."
+   },
+   {
+    "text": "Un estudiante \"limpia\" el endpoint de creación de la Guía de Flask y borra la línea <code class=\"ic\">global next_id</code> porque \"no hace nada\":<span class=\"codeblk\">next_id = 3\n\n@app.route(\"/api/users\", methods=[\"POST\"])\ndef crear_usuario():\n    data = request.get_json()\n    if not data or not data.get(\"nombre\"):\n        return jsonify({\"error\": \"El nombre es requerido\"}), 400\n    nuevo = {\"id\": next_id, \"nombre\": data[\"nombre\"]}\n    users.append(nuevo)\n    next_id += 1\n    return jsonify(nuevo), 201</span>¿Qué pasa en el primer POST válido?",
+    "opts": [
+     "UnboundLocalError (500): al asignar next_id con +=, Python lo trata como variable local en toda la función y lo lee antes de que tenga valor.",
+     "Funciona, pero todos los usuarios nuevos reciben el id 3: el incremento se aplica a una copia local que desaparece al salir de la función, y la variable global nunca cambia.",
+     "Funciona igual que antes: global solo es necesario para modificar listas y diccionarios; los enteros se leen y se incrementan sin declararlo.",
+     "Devuelve 400, porque Flask detecta que next_id no está definido dentro de la función y lo interpreta como un dato faltante."
+    ],
+    "correct": 0,
+    "just": "Respuesta correcta: la guía explica que sin global Python crearía una variable local; en realidad es más estricto: basta con que la función ASIGNE el nombre (next_id += 1) para que sea local en todo su cuerpo, y leerlo antes produce UnboundLocalError, que Flask convierte en 500. No llega a crear usuarios con id 3: la excepción ocurre antes del append. Es al revés con listas y diccionarios: modificarlos por dentro (append, asignar una clave) no requiere global, lo que sí lo requiere es reasignar el nombre (como users = [...] en el DELETE). Flask no transforma un error de Python en 400: un error no controlado es 500."
+   },
+   {
+    "text": "Siguiendo el desafío de sostenibilidad del Lab B1, un equipo despliega en Render su repository.py que guarda las tareas en una lista en memoria, con gunicorn configurado con 2 procesos (workers). Los usuarios reportan que a veces una tarea recién creada \"aparece y desaparece\" al recargar, y que tras cada deploy se pierden todas. ¿Qué explica AMBOS síntomas?",
+    "opts": [
+     "Cada worker de gunicorn tiene su propia lista en RAM, y todas se borran al reiniciarse el proceso en cada deploy; lo resuelve el Lab B2 (Supabase).",
+     "El navegador guarda en caché las respuestas GET y a veces muestra la versión anterior de la lista; basta con desactivar la caché y enviar un encabezado no-cache para que las tareas dejen de desaparecer.",
+     "Render limita a 50 los elementos de una lista en memoria por proceso y descarta los más antiguos de forma aleatoria.",
+     "Es un bloqueo de CORS intermitente: algunas peticiones se rechazan en el navegador y por eso la tarea parece desaparecer."
+    ],
+    "correct": 0,
+    "just": "Respuesta correcta: el Lab B1 advierte que repository.py \"guarda todo en RAM\" y pregunta qué pasa si Render reinicia el proceso tras cada deploy; esa tensión (rapidez sin instalar nada contra durabilidad real) es lo que resuelve el Lab B2 con Supabase. Con varios workers de gunicorn, cada proceso tiene su propia memoria, así que las listas divergen. La caché del navegador no explica la pérdida total tras un deploy. El límite de 50 es un invento (el 50 del curso es el limit por defecto sugerido para GET /tasks). CORS no es intermitente: bloquea siempre o nunca según la configuración."
+   },
+   {
+    "text": "En la Guía de Flask el endpoint <code class=\"ic\">PUT /api/users/&lt;id&gt;</code> usa <code class=\"ic\">user[\"nombre\"] = data.get(\"nombre\", user[\"nombre\"])</code> para cada campo, de modo que si el cliente no envía un campo, se conserva el valor anterior. Según el vocabulario REST del Lab 2, ¿qué observación es la correcta al pasar este endpoint al contrato del MVP?",
+    "opts": [
+     "Ese comportamiento parcial corresponde a PATCH; PUT reemplaza el recurso entero. El contrato debe declarar PATCH o exigir el recurso completo.",
+     "Es correcto como PUT, porque Flask trata PUT y PATCH como sinónimos al enrutar y el contrato puede declarar cualquiera de los dos, siempre que el Frontend use el mismo.",
+     "Debería ser POST, porque en REST cualquier operación que cambie datos en el servidor se hace con POST sobre el recurso.",
+     "Debería ser GET con query params, para que cada actualización quede registrada en el historial del navegador y sea fácil de auditar."
+    ],
+    "correct": 0,
+    "just": "Respuesta correcta: el Lab 2 define PATCH como \"modificar parte\" (solo los campos que mandás) y PUT como \"reemplazar\" el recurso entero, y por eso el Mini Task Manager usa PATCH para cambiar el estado. El patrón data.get(campo, valor_actual) de la guía es una actualización parcial. No son sinónimos: el contrato debe declarar el método exacto. POST en REST se usa para CREAR en una colección, no para toda modificación. Usar GET para modificar viola la semántica del verbo de lectura y además expondría los datos en URLs y en el historial."
+   }
+  ]
+ },
+ {
+  "id": 1,
+  "title": "Acceso a datos: errores en el código",
+  "icon": "🗄️",
+  "color": "red",
+  "type": "multiple",
+  "desc": "Lee el código con lupa: inyección SQL, parámetros, transacciones, capas y fugas de datos con PostgreSQL y pg8000",
+  "questions": [
+   {
+    "text": "Contexto común: API Flask en capas (routes, services, repository) conectada a PostgreSQL de Supabase con el driver pg8000 (marcadores %s). Un integrante agrega una búsqueda por título en repository.py:<span class=\"codeblk\">def buscar_por_titulo(self, titulo):\n    cur = self.conn.cursor()\n    cur.execute(f\"SELECT id, titulo, hecha FROM tareas WHERE titulo = '{titulo}'\")\n    return cur.fetchall()</span>Un atacante envía como título <code class=\"ic\">x' OR '1'='1</code>. ¿Qué ocurre y cuál es la corrección que exige el curso?",
+    "opts": [
+     "La condición se vuelve siempre verdadera y devuelve TODAS las tareas (inyección, OWASP A03); se corrige con <code class=\"ic\">execute(\"... = %s\", (titulo,))</code>.",
+     "No pasa nada grave: la f-string de Python escapa automáticamente las comillas simples antes de enviar el texto, así que el valor llega a PostgreSQL como un título literal inofensivo.",
+     "Se corrige quitando las comillas del valor con <code class=\"ic\">titulo.replace(\"'\", \"\")</code> antes de armar la consulta, que es la defensa que recomienda OWASP.",
+     "Se corrige limitando el campo a 200 caracteres en el formulario de React, porque una inyección necesita cadenas largas."
+    ],
+    "correct": 0,
+    "just": "Respuesta correcta: la cadena del atacante cierra la comilla y agrega OR '1'='1', exactamente el tipo de inyección que muestra el desafío de seguridad del Lab 1 (la cadena se ejecuta como SQL directo, OWASP A03:2021). La mitigación del curso son las consultas parametrizadas en la capa de Acceso a datos; con pg8000 el marcador es %s y el valor viaja por separado en una tupla. Una f-string no escapa nada: solo interpola texto. Borrar comillas es una lista negra frágil (rompe títulos legítimos como \"D'Arcy\" y no cubre otros vectores). Limitar el largo en React no protege: el Frontend se evita con curl y la inyección cabe en muy pocos caracteres."
+   },
+   {
+    "text": "Contexto común: API Flask en capas (routes, services, repository) conectada a PostgreSQL de Supabase con el driver pg8000 (marcadores %s). Durante la revisión de código aparecen dos versiones casi idénticas de la misma línea. Observa con atención el carácter que va después del texto de la consulta:<span class=\"codeblk\"># Versión A\ncur.execute(\"DELETE FROM tareas WHERE id = %s\" % tarea_id)\n\n# Versión B\ncur.execute(\"DELETE FROM tareas WHERE id = %s\", (tarea_id,))</span>¿Cuál es la afirmación correcta?",
+    "opts": [
+     "Solo la B es parametrizada: en la A, el operador % de Python arma el SQL antes de execute (interpolación); en la B, el driver recibe consulta y valor por separado.",
+     "Ambas son equivalentes: en los dos casos el %s lo resuelve pg8000 de forma segura, porque execute analiza la cadena que recibe y escapa cualquier valor que encuentre dentro de ella.",
+     "La A es más segura, porque el operador % convierte primero el valor a texto y así se evita que se ejecute como código SQL.",
+     "La B falla porque pg8000 no acepta tuplas; los parámetros deben pasarse siempre como una lista entre corchetes."
+    ],
+    "correct": 0,
+    "just": "Respuesta correcta: un solo carácter cambia todo. Con \"...%s\" % tarea_id es Python quien sustituye el valor dentro del texto y execute recibe SQL ya armado, por lo que un tarea_id como \"1 OR 1=1\" borraría todas las filas; con la coma, execute recibe la plantilla y la tupla, y el driver envía el valor como parámetro (el principio de los $1, $2 del Mini Task Manager). No son equivalentes, y convertir a texto es justamente lo que permite inyectar. La API DB-API acepta una secuencia de parámetros: la tupla (tarea_id,) es la forma habitual."
+   },
+   {
+    "text": "Contexto común: API Flask en capas (routes, services, repository) conectada a PostgreSQL de Supabase con el driver pg8000 (marcadores %s). Este método devuelve un error en tiempo de ejecución apenas se llama:<span class=\"codeblk\">def obtener(self, tarea_id):\n    cur = self.conn.cursor()\n    cur.execute(\"SELECT id, titulo, hecha FROM tareas WHERE id = %s\", (tarea_id))\n    return cur.fetchone()</span>¿Dónde está el error?",
+    "opts": [
+     "<code class=\"ic\">(tarea_id)</code> no es una tupla: los paréntesis solo agrupan. Debe escribirse <code class=\"ic\">(tarea_id,)</code> con la coma final.",
+     "El marcador debe ser $1 cuando el valor es numérico, porque %s solo representa cadenas de texto y el id es un BIGSERIAL.",
+     "fetchone() no puede usarse después de un SELECT con WHERE; hay que usar fetchall() y luego tomar el primer elemento de la lista resultante.",
+     "Falta conn.commit() antes del fetchone(): sin confirmar la transacción, PostgreSQL no entrega las filas del SELECT al driver."
+    ],
+    "correct": 0,
+    "just": "Respuesta correcta: en Python, (x) es simplemente x; la tupla de un elemento se escribe (x,). Así, el driver recibe un entero o una cadena en lugar de una secuencia de parámetros y falla (o interpreta cada carácter de una cadena como un parámetro distinto). En pg8000 el marcador es %s para cualquier tipo; $1 es la sintaxis del driver pg de Node usado en el Mini Task Manager. fetchone() es la forma natural de leer una fila buscada por id. Un SELECT no necesita commit para devolver datos: el commit confirma escrituras."
+   },
+   {
+    "text": "Contexto común: API Flask en capas (routes, services, repository) conectada a PostgreSQL de Supabase con el driver pg8000 (marcadores %s). El POST responde 201 con el id nuevo, pero la tarea no aparece en el GET siguiente ni en el Table Editor de Supabase. Además, los ids de las tareas que sí se guardan después \"saltan\" números.<span class=\"codeblk\">def crear(self, titulo):\n    cur = self.conn.cursor()\n    cur.execute(\n        \"INSERT INTO tareas (titulo) VALUES (%s) RETURNING id, titulo, hecha, creada_en\",\n        (titulo,))\n    fila = cur.fetchone()\n    cur.close()\n    return fila</span>¿Qué explica TODOS los síntomas?",
+    "opts": [
+     "Falta conn.commit(): la transacción no se confirma y se revierte al cerrar la conexión; la secuencia del id no se revierte, por eso los ids saltan.",
+     "RETURNING hace que PostgreSQL devuelva una vista previa de la fila sin guardarla; para persistir hay que ejecutar el INSERT sin RETURNING y luego un SELECT que obtenga el id generado.",
+     "RLS oculta la fila en el Table Editor porque la tarea no tiene usuario asignado; en realidad sí se guardó y los saltos de id son normales.",
+     "El navegador guarda en caché el GET anterior; los ids saltan porque React envía el POST dos veces por el modo estricto."
+    ],
+    "correct": 0,
+    "just": "Respuesta correcta: los drivers que siguen DB-API (pg8000, psycopg2) abren una transacción implícita y no confirman nada hasta llamar a conn.commit(); si la conexión se cierra o se reinicia, PostgreSQL hace rollback. RETURNING solo devuelve los valores de la fila insertada dentro de esa misma transacción, por eso la API tenía un id que responder. Las secuencias son no transaccionales: el número consumido no se devuelve, de ahí los saltos. RETURNING no impide guardar. El Table Editor de Supabase opera con privilegios de administración y no está sujeto a las políticas RLS de los usuarios. La caché no explica que la fila tampoco exista en la base."
+   },
+   {
+    "text": "Contexto común: API Flask en capas (routes, services, repository) conectada a PostgreSQL de Supabase con el driver pg8000 (marcadores %s). Así están implementadas dos capas:<span class=\"codeblk\"># repository.py\ndef obtener(self, tarea_id):\n    cur = self.conn.cursor()\n    cur.execute(\"SELECT id, titulo, hecha FROM tareas WHERE id = %s\", (tarea_id,))\n    fila = cur.fetchone()\n    return {\"id\": fila[0], \"titulo\": fila[1], \"hecha\": fila[2]}\n\n# routes.py\n@tareas_bp.get(\"/&lt;int:tarea_id&gt;\")\ndef detalle(tarea_id):\n    return jsonify(services.obtener_tarea(tarea_id)), 200</span><code class=\"ic\">GET /api/tareas/999</code> (inexistente) responde 500 con <code class=\"ic\">TypeError: 'NoneType' object is not subscriptable</code>. El contrato dice 404. ¿Cuál es la corrección respetando las 3 capas?",
+    "opts": [
+     "El repository devuelve None si no hay fila, el service lanza \"no encontrado\" y la ruta lo traduce a 404 con { error }.",
+     "El repository debe devolver directamente <code class=\"ic\">jsonify({\"error\": \"No encontrado\"}), 404</code>, porque es la única capa que sabe con certeza si la fila existe en la base de datos.",
+     "Envolver la ruta en try/except y devolver un diccionario vacío {} con 200, para que el Frontend nunca tenga que manejar un error.",
+     "Configurar PostgreSQL para que lance un error 404 cuando un SELECT no encuentra filas, y capturarlo en el repository."
+    ],
+    "correct": 0,
+    "just": "Respuesta correcta: es exactamente el reparto del Mini Task Manager: findById devuelve rows[0] || null, el service lanza un error con statusCode 404 y el controlador responde con el código semántico. fetchone() devuelve None cuando no hay fila, y None[0] produce el TypeError. Que el repository devuelva jsonify lo acopla a HTTP, y la ficha del Acceso a datos dice que no toma decisiones del negocio ni conoce el protocolo. Un {} con 200 miente al cliente (el Lab 2 critica devolver 200 ante errores). PostgreSQL no conoce códigos HTTP: un SELECT sin filas es un resultado válido y vacío, no un error."
+   },
+   {
+    "text": "Contexto común: API Flask en capas (routes, services, repository) conectada a PostgreSQL de Supabase con el driver pg8000 (marcadores %s). Un integrante prueba el cambio de estado con una sola tarea en su base local y todo \"funciona\". En producción, al marcar UNA tarea como hecha, se marcan todas las de la cooperativa:<span class=\"codeblk\">def cambiar_estado(self, tarea_id, hecha):\n    cur = self.conn.cursor()\n    cur.execute(\"UPDATE tareas SET hecha = %s RETURNING id\", (hecha,))\n    filas = cur.fetchall()\n    self.conn.commit()\n    return len(filas) &gt; 0</span>¿Qué falla y por qué la prueba local no lo detectó?",
+    "opts": [
+     "Falta <code class=\"ic\">WHERE id = %s</code> (con tarea_id en la tupla); con una sola fila de prueba, \"todas\" y \"la correcta\" coinciden.",
+     "RETURNING id hace que el UPDATE se aplique a todas las filas que tienen id; al quitar RETURNING, PostgreSQL vuelve a limitar el cambio a la fila que se está consultando.",
+     "El commit está mal ubicado: debe ir antes del execute para abrir una transacción que limite el UPDATE a una sola fila.",
+     "El tipo booleano de hecha no se puede parametrizar con %s, y ante un parámetro inválido PostgreSQL actualiza todas las filas por defecto."
+    ],
+    "correct": 0,
+    "just": "Respuesta correcta: un UPDATE sin WHERE modifica cada fila de la tabla; el tutorial del Mini Task Manager usa UPDATE tasks SET status = $1 WHERE id = $2 RETURNING ..., con el id como segundo parámetro. La prueba con una sola fila es un caso degenerado que no distingue \"una\" de \"todas\"; por eso el Lab 2 pide criterios de aceptación con resultados observables y datos representativos. RETURNING solo devuelve columnas de las filas afectadas, no amplía el alcance. Un commit antes del execute no confirma nada útil. Los booleanos se parametrizan como cualquier valor."
+   },
+   {
+    "text": "Contexto común: API Flask en capas (routes, services, repository) conectada a PostgreSQL de Supabase con el driver pg8000 (marcadores %s). El equipo activó RLS en la tabla tareas con la política <code class=\"ic\">using ( (select auth.uid()) = usuario_id )</code> y afirma: \"un usuario no puede borrar tareas ajenas\". Su backend Flask se conecta con el DATABASE_URL del usuario postgres y tiene:<span class=\"codeblk\"># services.py\ndef eliminar_tarea(tarea_id, usuario_actual):\n    return repository.eliminar(tarea_id)\n\n# repository.py\ndef eliminar(self, tarea_id):\n    cur = self.conn.cursor()\n    cur.execute(\"DELETE FROM tareas WHERE id = %s RETURNING id\", (tarea_id,))\n    fila = cur.fetchone()\n    self.conn.commit()\n    return fila is not None</span>Beatriz, autenticada, envía <code class=\"ic\">DELETE /api/tareas/57</code> (la tarea 57 es de Carlos) y la borra. ¿Por qué falló la protección?",
+    "opts": [
+     "La conexión como postgres no queda sujeta a RLS ni lleva el JWT; la autorización va en el backend, filtrando con <code class=\"ic\">AND usuario_id = %s</code> del token verificado.",
+     "RLS solo protege las operaciones SELECT; para impedir un DELETE ajeno hay que escribir un trigger BEFORE DELETE que compare el usuario de la sesión con el dueño de la fila.",
+     "La política está bien escrita, pero RLS tarda unos minutos en activarse después del ALTER TABLE; pasado ese tiempo el ataque dejaría de funcionar.",
+     "El problema es el RETURNING id: cuando se piden datos de vuelta, PostgreSQL desactiva RLS para esa consulta."
+    ],
+    "correct": 0,
+    "just": "Respuesta correcta: RLS se evalúa según el ROL con que se ejecuta la consulta. Las peticiones que pasan por la API de datos de Supabase llegan como anon o authenticated y llevan el JWT (de ahí auth.uid()); una conexión directa como postgres es la del dueño y administrador, que no queda filtrada, y no trae ningún JWT. Por eso, con un backend propio, la autorización vive en los servicios y en el WHERE del repository, con el usuario tomado del token verificado (nunca del cuerpo). RLS sí puede proteger DELETE (con una política FOR DELETE); no hay demora de activación; y RETURNING no desactiva nada."
+   },
+   {
+    "text": "Contexto común: API Flask en capas (routes, services, repository) conectada a PostgreSQL de Supabase con el driver pg8000 (marcadores %s). Un integrante copia el repository del tutorial Mini Task Manager (Node + pg) y lo traduce a Python dejando los marcadores tal cual:<span class=\"codeblk\">cur.execute(\n    \"INSERT INTO tareas (titulo, responsable) VALUES ($1, $2) RETURNING id\",\n    (titulo, responsable))</span>Según el Lab B1, ¿cuál es el análisis correcto?",
+    "opts": [
+     "Cada driver define su marcador: pg de Node usa $1 y pg8000 usa %s. Se transfiere el principio (parametrizar), no la sintaxis.",
+     "Es correcto: $1 y $2 son el estándar SQL de parámetros posicionales, y todos los drivers de PostgreSQL, incluido pg8000, los aceptan y los traducen de la misma forma.",
+     "Conviene reemplazarlo por una f-string, porque %s también es interpolación de cadenas de Python y por lo tanto es igual de inseguro que concatenar.",
+     "Hay que volver a psycopg2-binary, que es el único driver de Python que acepta la notación $1 del tutorial de Node."
+    ],
+    "correct": 0,
+    "just": "Respuesta correcta: el Lab B1 elige pg8000 (100 % Python, sin compilador) y aclara que usa el \"mismo estilo de parámetros %s\"; el Mini Task Manager usa $1, $2 porque su driver es pg de Node. La lección de arquitectura del curso es que el patrón permanece y la tecnología cambia. No todos los drivers aceptan la misma sintaxis de marcadores. El %s de execute(consulta, parámetros) NO es interpolación: es un marcador que resuelve el driver (la interpolación insegura es usar el operador % o una f-string). Y el Lab B1 recomienda justamente NO depender de psycopg2-binary porque puede fallar en Windows al requerir compilador."
+   },
+   {
+    "text": "Contexto común: API Flask en capas (routes, services, repository) conectada a PostgreSQL de Supabase con el driver pg8000 (marcadores %s). El endpoint de perfil devuelve directamente lo que trae el repository:<span class=\"codeblk\"># repository.py\ndef buscar_por_email(self, email):\n    cur = self.conn.cursor()\n    cur.execute(\"SELECT * FROM usuarios WHERE email = %s\", (email,))\n    cols = [c[0] for c in cur.description]\n    fila = cur.fetchone()\n    return dict(zip(cols, fila)) if fila else None\n\n# routes.py\n@auth_bp.get(\"/perfil\")\n@token_required\ndef perfil():\n    return jsonify(services.perfil(g.current_user[\"email\"])), 200</span>La consulta es parametrizada y la ruta está protegida. ¿Qué problema de seguridad persiste?",
+    "opts": [
+     "SELECT * trae todas las columnas, incluido password_hash, que termina en el JSON; hay que devolver solo las columnas del contrato.",
+     "Ninguno: el hash de la contraseña es irreversible por diseño, así que exponerlo en el perfil no representa riesgo aunque un atacante lo obtenga.",
+     "El problema es cur.description: expone la estructura interna de la tabla al cliente y habilita una inyección SQL basada en los nombres de columna.",
+     "El decorador @token_required debe ir encima de @auth_bp.get; en el orden actual, Flask registra la función sin protección y cualquiera accede al perfil."
+    ],
+    "correct": 0,
+    "just": "Respuesta correcta: el contrato del Lab 2 fija EXACTAMENTE qué campos viajan en cada respuesta; SELECT * acopla la respuesta a la tabla y cualquier columna sensible presente o futura se filtra al cliente. Un hash expuesto permite ataques de fuerza bruta fuera de línea contra contraseñas débiles, así que sí tiene riesgo. cur.description solo se usa dentro del servidor para nombrar las columnas; no llega al cliente ni habilita inyección. En Flask el decorador de ruta va primero (arriba) y el de protección debajo, tal como en el material de autenticación; el orden mostrado es el correcto."
+   },
+   {
+    "text": "Contexto común: API Flask en capas (routes, services, repository) conectada a PostgreSQL de Supabase con el driver pg8000 (marcadores %s). Tras unas horas en producción, la API empieza a fallar con errores de \"demasiadas conexiones\" hacia la base de Supabase, aunque hay pocos usuarios:<span class=\"codeblk\">def listar(self):\n    conn = pg8000.dbapi.connect(user=U, password=P, host=H, database=\"postgres\")\n    cur = conn.cursor()\n    cur.execute(\"SELECT id, titulo, hecha FROM tareas ORDER BY creada_en DESC LIMIT 50\")\n    return cur.fetchall()</span>¿Cuál es la causa más probable?",
+    "opts": [
+     "Cada llamada abre una conexión y nunca la cierra; se acumulan hasta agotar el límite. Hay que cerrarla (try/finally) o reutilizarla.",
+     "LIMIT 50 obliga a PostgreSQL a mantener abierta la conexión hasta que el cliente pida el resto de las filas, y cada petición deja una conexión esperando.",
+     "El plan gratuito de Supabase limita las filas por tabla, y el mensaje de \"demasiadas conexiones\" es la forma en que avisa que se superó la cuota.",
+     "ORDER BY creada_en DESC sin índice obliga a PostgreSQL a abrir una conexión auxiliar por cada fila que ordena."
+    ],
+    "correct": 0,
+    "just": "Respuesta correcta: la conexión es un recurso del servidor de base de datos, limitado; si el código la abre en cada petición y no la cierra, cada request deja una conexión viva hasta que el proceso muere. La solución es cerrarla de forma garantizada o reutilizar conexiones, y este es también un tema de sostenibilidad (recursos del servidor). LIMIT 50 es una buena práctica del Lab 2 y no mantiene conexiones abiertas. El límite del error es de conexiones, no de filas. Un índice mejora la velocidad del ORDER BY, pero la falta de índice nunca abre conexiones extra."
+   },
+   {
+    "text": "Contexto común: API Flask en capas (routes, services, repository) conectada a PostgreSQL de Supabase con el driver pg8000 (marcadores %s). En repository.py aparece <code class=\"ic\">pg8000.dbapi.connect(user=\"postgres\", password=\"Cooperativa2026!\", host=\"db.xxxx.supabase.co\")</code> y ya está pusheado a un repositorio PÚBLICO de GitHub. El equipo propone borrar esa línea en un nuevo commit. ¿Qué es lo correcto?",
+    "opts": [
+     "Pasar la configuración a variables de entorno (.env ignorado, .env.example versionado) y cambiar la contraseña: sigue en el historial de Git.",
+     "Borrar la línea en un nuevo commit es suficiente, porque GitHub muestra únicamente la última versión de cada archivo y el historial anterior solo lo ven los colaboradores del repositorio.",
+     "Hacer el repositorio privado a partir de hoy; eso elimina la contraseña de los clones que otras personas ya descargaron.",
+     "Guardar la contraseña codificada en base64 dentro del mismo archivo; así queda cifrada y deja de ser un secreto expuesto."
+    ],
+    "correct": 0,
+    "just": "Respuesta correcta: el Lab 1 establece que los secretos nunca se suben al repositorio y que la contraseña de la base y las claves de Supabase van en un .env local; el Lab 3 agrega el patrón .env ignorado + .env.example versionado. Git guarda toda la historia: cualquiera puede ver el commit anterior, así que un secreto publicado se considera comprometido y hay que rotarlo. Hacer privado el repositorio no elimina las copias ya descargadas. Base64 es una codificación reversible, no cifrado."
+   },
+   {
+    "text": "Contexto común: API Flask en capas (routes, services, repository) conectada a PostgreSQL de Supabase con el driver pg8000 (marcadores %s). Un integrante pone la política de palabras prohibidas dentro del repository, \"porque es el último punto antes de la base y así nadie la esquiva\":<span class=\"codeblk\">def crear(self, titulo):\n    if \"spam\" in titulo.lower():\n        raise ValueError(\"Título no permitido\")\n    cur = self.conn.cursor()\n    cur.execute(\"INSERT INTO tareas (titulo) VALUES (%s) RETURNING id\", (titulo,))\n    ...</span>Según las fichas de responsabilidades del Lab 1, ¿cuál es el problema?",
+    "opts": [
+     "El Acceso a datos no decide reglas de negocio: la regla va en services.py, que además la traduce a un 422 coherente.",
+     "Ninguno: el repository es el mejor lugar para las reglas de contenido, porque es la última capa antes de la base y ningún cliente puede esquivarla desde ahí.",
+     "La regla debería estar en el componente de React, que es donde el usuario escribe el título y puede corregirlo al instante.",
+     "La regla debería ser un CHECK en la base de datos, porque las políticas de contenido son responsabilidad exclusiva de PostgreSQL según la Ficha 5."
+    ],
+    "correct": 0,
+    "just": "Respuesta correcta: la Ficha 4 dice que el Repository \"no toma decisiones del negocio\" y el tutorial lo ejemplifica: no evalúa si un título es grosero. La Lógica de negocio aplica las políticas (el Mini Task Manager tiene FORBIDDEN_WORDS en el service y lanza 422). Cercanía a la base no es un criterio de responsabilidad; separar permite cambiar PostgreSQL por otra tecnología tocando solo el Acceso a datos. En React la regla es evitable con curl. La base garantiza consistencia (tipos, claves, unicidad, CHECK de valores como pending/done), pero la Ficha 5 dice que no ejecuta la lógica de la aplicación; una política de moderación es lógica de negocio."
+   },
+   {
+    "text": "Contexto común: API Flask en capas (routes, services, repository) conectada a PostgreSQL de Supabase con el driver pg8000 (marcadores %s). El contrato permite <code class=\"ic\">GET /api/tareas?orden=titulo</code>. El repository hace <code class=\"ic\">cur.execute(\"SELECT id, titulo FROM tareas ORDER BY %s\", (orden,))</code> y la lista no sale ordenada por título. ¿Qué es lo correcto?",
+    "opts": [
+     "Los marcadores reemplazan VALORES, no identificadores; se usa una lista blanca en el servidor, como <code class=\"ic\">{\"titulo\": \"titulo\", \"fecha\": \"creada_en\"}</code>.",
+     "Reemplazarlo por una f-string con el valor del query param, porque un nombre de columna no puede contener SQL ejecutable y por eso nunca abre una inyección.",
+     "Escribir %%s en lugar de %s para que pg8000 lo interprete como nombre de columna en lugar de valor.",
+     "Ordenar en el componente de React, porque ORDER BY no puede depender de un parámetro de la petición HTTP."
+    ],
+    "correct": 0,
+    "just": "Respuesta correcta: las consultas parametrizadas protegen los datos porque el valor nunca se interpreta como SQL; por lo mismo, no sirven para identificadores. La práctica segura es traducir la opción del cliente con una lista blanca definida en el servidor. Una f-string con el query param directo reabre la inyección (ORDER BY acepta expresiones y subconsultas). %% es la forma de escribir un % literal en la plantilla, no un modo de identificador. Ordenar en React obliga a traer la colección completa, lo contrario del desafío de sostenibilidad del Lab 2, que pide ordenar y filtrar en el servidor."
+   },
+   {
+    "text": "Contexto común: API Flask en capas (routes, services, repository) conectada a PostgreSQL de Supabase con el driver pg8000 (marcadores %s). El contrato dice que <code class=\"ic\">DELETE /api/tareas/{id}</code> responde 204 si borró y 404 si la tarea no existe. El equipo implementa:<span class=\"codeblk\"># repository.py\ndef eliminar(self, tarea_id):\n    cur = self.conn.cursor()\n    cur.execute(\"DELETE FROM tareas WHERE id = %s\", (tarea_id,))\n    self.conn.commit()\n\n# routes.py\n@tareas_bp.delete(\"/&lt;int:tarea_id&gt;\")\ndef borrar(tarea_id):\n    services.eliminar_tarea(tarea_id)\n    return \"\", 204</span>¿Qué ocurre con <code class=\"ic\">DELETE /api/tareas/999</code> (inexistente) y cómo se corrige?",
+    "opts": [
+     "Responde 204: un DELETE sin filas no es error para PostgreSQL. El repository debe informar si borró (rowcount o RETURNING) y la API responder 404.",
+     "PostgreSQL lanza una excepción cuando el WHERE de un DELETE no coincide con ninguna fila; la API responde 500 y se corrige capturando esa excepción con try/except en la ruta.",
+     "Responde 404 automáticamente, porque el convertidor &lt;int:&gt; de Flask verifica que la tarea exista antes de ejecutar la función.",
+     "El commit falla cuando no hay filas afectadas, así que la API termina respondiendo 409 Conflict."
+    ],
+    "correct": 0,
+    "just": "Respuesta correcta: un DELETE que no encuentra filas termina bien con 0 filas afectadas; si nadie lo verifica, la API miente con 204. El Mini Task Manager lo resuelve con DELETE ... RETURNING id y rows.length > 0, y además el service busca la tarea antes y lanza 404; en pg8000 también sirve cur.rowcount. PostgreSQL no lanza excepción por 0 filas. Flask solo valida que el segmento coincida con &lt;int:...>; no sabe nada de la base. El commit de una transacción sin cambios no falla, y 409 no es el código que pide el contrato."
+   },
+   {
+    "text": "Contexto común: API Flask en capas (routes, services, repository) conectada a PostgreSQL de Supabase con el driver pg8000 (marcadores %s). Se necesita buscar tareas cuyo título CONTENGA lo que escribe el usuario (variable q). ¿Cuál de estas implementaciones es correcta y segura?",
+    "opts": [
+     "<code class=\"ic\">cur.execute(\"SELECT id, titulo FROM tareas WHERE titulo ILIKE %s\", (\"%\" + q + \"%\",))</code>",
+     "<code class=\"ic\">cur.execute(\"SELECT id, titulo FROM tareas WHERE titulo ILIKE '%\" + q + \"%'\")</code>",
+     "<code class=\"ic\">cur.execute(f\"SELECT id, titulo FROM tareas WHERE titulo ILIKE '%{q}%'\")</code>",
+     "<code class=\"ic\">cur.execute(\"SELECT id, titulo FROM tareas WHERE titulo ILIKE '%%s%'\", (q,))</code>"
+    ],
+    "correct": 0,
+    "just": "Respuesta correcta: la que arma los comodines % en PYTHON, sobre el valor, y lo envía como un único parámetro: el driver lo trata como dato, así que el texto del usuario nunca se interpreta como SQL. La concatenación con + y la f-string meten el texto del usuario directamente en la consulta, con la misma vulnerabilidad de inyección que muestra el Lab 1. La versión con '%%s%' coloca el marcador dentro de comillas: deja de ser un marcador de parámetro y la consulta no hace lo esperado (o falla porque sobra un parámetro)."
+   },
+   {
+    "text": "Contexto común: API Flask en capas (routes, services, repository) conectada a PostgreSQL de Supabase con el driver pg8000 (marcadores %s). Para \"ahorrar código\", el service pasa al repository el cuerpo completo que llega del cliente:<span class=\"codeblk\">def crear(self, data):\n    cur = self.conn.cursor()\n    cur.execute(\n        \"INSERT INTO tareas (id, titulo, hecha, creada_en) VALUES (%s, %s, %s, %s)\",\n        (data[\"id\"], data[\"titulo\"], data[\"hecha\"], data[\"creada_en\"]))\n    self.conn.commit()</span>La consulta está parametrizada. Según el diccionario de datos del Lab 2, ¿cuál es el error de diseño?",
+    "opts": [
+     "id, creada_en y el estado inicial los asigna el servidor o la base, no el cliente; el cliente solo envía titulo y lo demás se ignora.",
+     "Ninguno: como la consulta es parametrizada, cualquier campo que envíe el cliente es seguro, incluidos el id y las fechas, porque el driver los trata como datos y no como SQL.",
+     "Solo falta validar que data[\"id\"] sea un número entero positivo; con esa validación, el diseño cumple el contrato.",
+     "El error es usar INSERT: cuando el cliente envía el id, lo correcto en REST es PUT /api/tareas."
+    ],
+    "correct": 0,
+    "just": "Respuesta correcta: el Paso 2 del Lab 2 agrega la columna \"quién lo asigna\": id, created_at y updated_at los asigna la BASE DE DATOS, el Frontend nunca los manda, y \"si el cliente pudiera elegir su id, habría colisiones y agujeros de seguridad\"; además toda nueva tarea inicia como pending por regla del service. La parametrización protege de la inyección, pero no decide qué campos se aceptan (eso es el anti mass-assignment del contrato). Validar el tipo del id no resuelve que el cliente no debe elegirlo. PUT a una colección no es la operación de creación del contrato: se crea con POST."
+   }
+  ]
+ },
+ {
+  "id": 2,
+  "title": "Supabase y Row Level Security",
+  "icon": "🛡️",
+  "color": "purple",
+  "type": "multiselect",
+  "desc": "Políticas USING y WITH CHECK, claves anon y service_role, auth.uid() y cómo convive RLS con la API REST",
+  "questions": [
+   {
+    "text": "Tabla de referencia en Supabase: <code class=\"ic\">tareas(id bigserial, titulo text, hecha boolean, usuario_id uuid, creada_en timestamptz)</code>. Un equipo ejecuta en el editor SQL <code class=\"ic\">ALTER TABLE tareas ENABLE ROW LEVEL SECURITY;</code> pero NO crea ninguna política. Su frontend React usa supabase-js con la clave anon. <strong>Selecciona las 3 afirmaciones correctas.</strong>",
+    "opts": [
+     "Un <code class=\"ic\">supabase.from(\"tareas\").select()</code> desde React devuelve una lista vacía [] sin error: con RLS activo y sin políticas, el acceso se niega por defecto.",
+     "Un insert desde React falla con un error de violación de la política de seguridad a nivel de fila (row-level security).",
+     "Desde el editor SQL, conectado como postgres, el equipo sigue viendo todas las filas, porque ese rol no queda filtrado por RLS.",
+     "Con RLS activo y sin políticas, todos pueden leer pero nadie puede escribir; las políticas solo hacen falta para INSERT, UPDATE y DELETE.",
+     "RLS oculta COLUMNAS sensibles: al activarlo, supabase-js deja de devolver campos como usuario_id.",
+     "Cada fila no permitida se responde con un 404, para que el Frontend sepa cuáles existen pero están protegidas."
+    ],
+    "correct": [
+     0,
+     1,
+     2
+    ],
+    "just": "Correctas: RLS funciona como \"denegar todo salvo lo que una política permita\": sin políticas, un SELECT de anon o authenticated simplemente no ve filas y devuelve [] (no es un error, por eso confunde). En escritura, la fila nueva no pasa ninguna comprobación y la inserción se rechaza con un error de row-level security. El rol postgres (dueño y administrador) no queda filtrado, por eso el editor SQL y el Table Editor muestran los datos. Incorrectas: no existe un \"modo solo lectura\" implícito: la lectura también se niega. RLS filtra FILAS, no columnas (las columnas se controlan con permisos o vistas). Y RLS no genera 404: las filas no autorizadas son invisibles, como si no existieran."
+   },
+   {
+    "text": "Tabla de referencia en Supabase: <code class=\"ic\">tareas(id bigserial, titulo text, hecha boolean, usuario_id uuid, creada_en timestamptz)</code>. El equipo crea SOLO estas dos políticas:<span class=\"codeblk\">create policy \"ver propias\" on tareas for select to authenticated\n  using ( (select auth.uid()) = usuario_id );\n\ncreate policy \"crear propias\" on tareas for insert to authenticated\n  with check ( (select auth.uid()) = usuario_id );</span><strong>Selecciona las 3 afirmaciones correctas.</strong>",
+    "opts": [
+     "USING filtra las filas EXISTENTES que el usuario puede ver (o actualizar o eliminar); WITH CHECK valida los valores de la fila NUEVA o modificada antes de guardarla.",
+     "Si Ana (autenticada) intenta insertar una tarea con el usuario_id de Beto, la inserción se rechaza.",
+     "Si Ana intenta eliminar una de SUS propias tareas desde supabase-js, no se borra nada, porque no existe ninguna política FOR DELETE.",
+     "La política de INSERT podría escribirse con USING en lugar de WITH CHECK y funcionaría exactamente igual.",
+     "auth.uid() devuelve el correo del usuario, por eso usuario_id debería ser de tipo text.",
+     "Con la política \"ver propias\", Ana también puede editar el título de sus tareas, porque quien puede ver una fila puede modificarla."
+    ],
+    "correct": [
+     0,
+     1,
+     2
+    ],
+    "just": "Correctas: es la diferencia central: USING decide qué filas existentes son visibles o afectables; WITH CHECK decide si la fila resultante es aceptable. La fila nueva no cumple (select auth.uid()) = usuario_id, así que WITH CHECK la rechaza: nadie puede crear tareas a nombre de otro. Las políticas son por operación: sin FOR DELETE, las filas no son elegibles para borrarse y el DELETE afecta 0 filas (un bug silencioso muy común). Incorrectas: en PostgreSQL una política FOR INSERT solo admite WITH CHECK (no hay filas existentes que filtrar). auth.uid() devuelve el id (uuid) del usuario del JWT, no su correo. Y ver no implica editar: UPDATE necesita su propia política."
+   },
+   {
+    "text": "Sobre las claves de un proyecto Supabase y el frontend React + Vite del curso, <strong>selecciona las 3 afirmaciones correctas.</strong>",
+    "opts": [
+     "La clave anon está pensada para usarse en el navegador; es segura SOLO si todas las tablas expuestas tienen RLS activo con políticas correctas.",
+     "La clave service_role se salta RLS; si se guarda en una variable VITE_SUPABASE_KEY, queda incrustada en el JavaScript de dist/ y cualquiera puede leerla.",
+     "Si la service_role llegó a publicarse, hay que regenerarla (rotarla) en Supabase: borrarla del código no la invalida.",
+     "Guardar la service_role en el .env del frontend es seguro, porque .env está en el .gitignore y nunca sale de la computadora del desarrollador.",
+     "La clave anon debe tratarse como una contraseña: si se publica, cualquiera obtiene acceso total a la base.",
+     "La service_role respeta RLS igual que la anon, pero con políticas de administrador predefinidas."
+    ],
+    "correct": [
+     0,
+     1,
+     2
+    ],
+    "just": "Correctas: la anon identifica al proyecto y se usa en clientes públicos; lo que protege los datos es RLS. La service_role está pensada para servidores de confianza y omite RLS; el Lab 3 advierte que todo lo que empieza con VITE_ se empaqueta en el JavaScript que baja al navegador y es PÚBLICO, y propone buscarlo con Ctrl+F en dist/assets. Un secreto expuesto se considera comprometido: hay que invalidarlo. Incorrectas: el .gitignore evita subir el archivo al repositorio, pero Vite igual copia el valor de las variables VITE_ al bundle que descarga cualquier visitante. La anon no da acceso total por sí sola si RLS está bien hecho. Y la service_role no respeta RLS: justamente lo omite."
+   },
+   {
+    "text": "Tabla de referencia en Supabase: <code class=\"ic\">tareas(id bigserial, titulo text, hecha boolean, usuario_id uuid, creada_en timestamptz)</code>. La API Flask del equipo se conecta con el DATABASE_URL del usuario postgres usando pg8000, y el frontend solo habla con Flask (nunca directo con Supabase). La tabla tiene RLS con políticas basadas en auth.uid(). <strong>Selecciona las 3 afirmaciones correctas.</strong>",
+    "opts": [
+     "Las políticas basadas en auth.uid() NO filtran las consultas de Flask: el rol postgres no queda sujeto a RLS y la conexión no lleva el JWT del usuario. La autorización debe implementarse en services y en el WHERE del repository.",
+     "El usuario_id para filtrar o insertar debe salir del token verificado en el backend (por ejemplo g.current_user), nunca de un campo del cuerpo JSON.",
+     "Aun así conviene mantener RLS activo: si alguien usa la clave anon contra la API de datos de Supabase, RLS sigue siendo la defensa en profundidad.",
+     "Como Flask usa postgres, RLS aplica las políticas como si el usuario autenticado fuera el dueño de todas las filas.",
+     "Al activar RLS, pg8000 envía automáticamente el JWT del usuario en cada consulta, y auth.uid() funciona igual que desde React.",
+     "Lo correcto es desactivar RLS, porque si el backend no lo usa solo agrega carga innecesaria a la base."
+    ],
+    "correct": [
+     0,
+     1,
+     2
+    ],
+    "just": "Correctas: RLS se evalúa según el rol de la conexión; las políticas con auth.uid() dependen del JWT que Supabase recibe por su API de datos. Una conexión directa como postgres no trae JWT y no es filtrada, por eso la regla \"solo tus tareas\" debe estar en el backend (AND usuario_id = %s). Si el id viene del cuerpo, cualquiera lo falsifica (el mismo principio de \"quién lo asigna\" del Lab 2). La clave anon y la URL del proyecto son públicas por diseño: desactivar RLS expondría la tabla completa por la API de datos. Incorrectas: postgres no \"se convierte\" en el usuario; pg8000 no conoce los JWT de Supabase; y desactivar RLS en una tabla del esquema público es exactamente el error que deja los datos abiertos."
+   },
+   {
+    "text": "Tabla de referencia en Supabase: <code class=\"ic\">tareas(id bigserial, titulo text, hecha boolean, usuario_id uuid, creada_en timestamptz)</code>. Revisando las políticas que propuso la IA, <strong>selecciona las 3 que son INSEGURAS</strong> para una app donde cada persona solo debe ver y gestionar sus propias tareas:",
+    "opts": [
+     "<code class=\"ic\">create policy p on tareas for select to anon using (true);</code>",
+     "<code class=\"ic\">create policy p on tareas for update to authenticated using ( (auth.jwt() -&gt; 'user_metadata' -&gt;&gt; 'rol') = 'admin' );</code>",
+     "<code class=\"ic\">alter table tareas disable row level security;</code> \"solo mientras terminamos el MVP\", con la clave anon ya publicada en el frontend",
+     "<code class=\"ic\">create policy p on tareas for select to authenticated using ( (select auth.uid()) = usuario_id );</code>",
+     "<code class=\"ic\">create policy p on tareas for insert to authenticated with check ( (select auth.uid()) = usuario_id );</code>",
+     "<code class=\"ic\">create policy p on tareas for delete to authenticated using ( (select auth.uid()) = usuario_id );</code>"
+    ],
+    "correct": [
+     0,
+     1,
+     2
+    ],
+    "just": "Inseguras: using (true) para anon hace pública TODA la tabla para cualquier visitante, sin iniciar sesión. user_metadata es información que el propio usuario puede modificar desde el cliente, así que cualquiera podría declararse \"admin\"; los roles de autorización deben venir de datos controlados por el servidor (por ejemplo app_metadata o una tabla de roles). Desactivar RLS con la clave anon publicada deja la tabla abierta por la API de datos durante todo ese tiempo. Seguras: las políticas que comparan (select auth.uid()) con usuario_id, restringidas al rol authenticated, para SELECT (USING), INSERT (WITH CHECK) y DELETE (USING). Principio AI-DLC: la IA propone, el equipo revisa y decide."
+   },
+   {
+    "text": "Tabla de referencia en Supabase: <code class=\"ic\">tareas(id bigserial, titulo text, hecha boolean, usuario_id uuid, creada_en timestamptz)</code>. Se agrega la columna <code class=\"ic\">publica boolean default false</code> y, además de \"ver propias\" (<code class=\"ic\">using ((select auth.uid()) = usuario_id)</code>), se crea:<span class=\"codeblk\">create policy \"ver publicas\" on tareas for select to authenticated\n  using ( publica = true );</span><strong>Selecciona las 2 afirmaciones correctas.</strong>",
+    "opts": [
+     "Las políticas permisivas de una misma operación se combinan con OR: un usuario autenticado ve sus tareas MÁS las tareas públicas de otros.",
+     "Agregar otra política permisiva nunca puede reducir lo que ya se veía; solo puede ampliarlo.",
+     "Las políticas se combinan con AND: el usuario solo verá las tareas que sean suyas Y además públicas.",
+     "La política creada al final reemplaza a la anterior, así que ahora solo se ven las públicas.",
+     "Como las tareas públicas son visibles, cualquier usuario autenticado también puede editarlas."
+    ],
+    "correct": [
+     0,
+     1
+    ],
+    "just": "Correctas: por defecto las políticas son PERMISIVAS y, para la misma operación y rol, PostgreSQL permite la fila si CUALQUIERA de ellas se cumple (OR). Por lo mismo, sumar una política permisiva solo agrega filas visibles; para restringir hay que modificar la existente (o usar políticas restrictivas, que se combinan con AND). Incorrectas: la combinación con AND es la de las políticas RESTRICTIVAS, no la de las permisivas por defecto. Ninguna política reemplaza a otra por orden de creación. Y ver no habilita editar: estas son políticas FOR SELECT; UPDATE necesita su propia política."
+   },
+   {
+    "text": "Tabla de referencia en Supabase: <code class=\"ic\">tareas(id bigserial, titulo text, hecha boolean, usuario_id uuid, creada_en timestamptz)</code>. Ana inicia sesión en la app React (supabase-js, clave anon) y <code class=\"ic\">supabase.from(\"tareas\").select()</code> devuelve [] SIN error, aunque en el Table Editor hay 20 tareas. <strong>Selecciona las 3 causas compatibles con ese síntoma.</strong>",
+    "opts": [
+     "RLS está activo pero no existe ninguna política FOR SELECT para el rol authenticated.",
+     "La política compara auth.uid() con la columna equivocada, por ejemplo <code class=\"ic\">using ((select auth.uid()) = id)</code>, y ninguna fila coincide.",
+     "Las 20 tareas se insertaron desde el backend o el editor SQL sin usuario_id (quedó NULL), y la comparación con NULL nunca es verdadera.",
+     "Un bloqueo de CORS en el navegador, que supabase-js convierte en una lista vacía.",
+     "La clave anon venció; cuando eso pasa, Supabase responde con una lista vacía en lugar de un error.",
+     "El Table Editor muestra datos en caché; en realidad la tabla está vacía."
+    ],
+    "correct": [
+     0,
+     1,
+     2
+    ],
+    "just": "Compatibles: sin política de lectura para ese rol, RLS niega todo y la respuesta es [] (no un error). Si la política compara con una columna que nunca coincide con el uuid del usuario, ninguna fila pasa el USING. En SQL, NULL = uuid da NULL, que no es verdadero, así que las filas sin dueño son invisibles para todos. El Table Editor sí las muestra porque opera con privilegios administrativos. Incompatibles: un bloqueo de CORS o una clave inválida o vencida producen un ERROR en la petición, no una respuesta exitosa vacía. Y el Table Editor consulta la base; con 20 filas visibles allí, la tabla no está vacía. Lección: con RLS, [] suele significar \"no autorizado\", no \"no hay datos\"."
+   },
+   {
+    "text": "Tabla de referencia en Supabase: <code class=\"ic\">tareas(id bigserial, titulo text, hecha boolean, usuario_id uuid, creada_en timestamptz)</code>. La única política de lectura es <code class=\"ic\">create policy p on tareas for select using ( auth.uid() = usuario_id );</code> (sin la cláusula <code class=\"ic\">to</code>). Un visitante que NO inició sesión abre la app. <strong>Selecciona las 3 afirmaciones correctas.</strong>",
+    "opts": [
+     "Para una petición anónima, auth.uid() devuelve NULL, así que la comparación no es verdadera y el visitante no ve ninguna fila.",
+     "Las filas con usuario_id NULL tampoco son visibles para el visitante, porque en SQL NULL = NULL no es verdadero.",
+     "Agregar <code class=\"ic\">to authenticated</code> expresa la intención con claridad y evita que la política se evalúe para el rol anon (también mejora el rendimiento).",
+     "Como la política no indica un rol, el visitante anónimo ve todas las tareas.",
+     "auth.uid() lanza un error 401 cuando no hay sesión, y supabase-js redirige al login.",
+     "PostgreSQL trata NULL = NULL como verdadero, por lo que el visitante ve las tareas sin dueño."
+    ],
+    "correct": [
+     0,
+     1,
+     2
+    ],
+    "just": "Correctas: sin JWT de usuario no hay sub que leer y auth.uid() es NULL; NULL = x no es verdadero. En SQL la comparación con NULL da NULL (desconocido), incluso NULL = NULL; para comparar nulos se usa IS NULL. Una política sin TO aplica a todos los roles (PUBLIC); restringirla a authenticated deja clara la intención y evita evaluarla en peticiones anónimas, algo que Supabase recomienda. Incorrectas: no indicar el rol no significa \"sin restricción\": la condición USING se sigue evaluando. auth.uid() no lanza errores ni redirige: devuelve NULL. Y NULL = NULL no es verdadero en SQL."
+   },
+   {
+    "text": "Sobre el reparto de responsabilidades entre RLS, la API REST y el frontend, <strong>selecciona las 3 afirmaciones correctas.</strong>",
+    "opts": [
+     "RLS es autorización a nivel de base de datos: se aplica sin importar qué cliente use la API de datos de Supabase (React, curl, una app móvil).",
+     "La validación de FORMATO (400) y las reglas de negocio (422) con mensajes { error, field } siguen siendo trabajo de la API y los servicios; RLS no produce los errores legibles del contrato.",
+     "Ocultar el botón \"Eliminar\" en React para las tareas ajenas es una mejora de experiencia de usuario, no una medida de seguridad.",
+     "Con RLS activo, la API Flask ya no necesita validar nada, porque la base rechaza todo lo que no corresponde.",
+     "RLS reemplaza el inicio de sesión: si las políticas están bien, no hace falta autenticar a los usuarios.",
+     "RLS protege al repository de Flask contra la inyección SQL aunque arme las consultas con f-strings."
+    ],
+    "correct": [
+     0,
+     1,
+     2
+    ],
+    "just": "Correctas: RLS vive en la capa de Base de datos y no depende del cliente que llega por la API de datos. El Lab 2 exige errores legibles con { error, field } y la distinción 400/422; una violación de RLS devuelve un error genérico de la base (o una lista vacía), que no le dice al usuario qué corregir. El Lab 3 lo repite: el Frontend nunca es la barrera de seguridad; cualquiera llama a la API con curl. Incorrectas: RLS no valida formato ni reglas de negocio. RLS AUTORIZA filas según quién es el usuario, pero para saber quién es hace falta autenticarlo (el JWT). Y la inyección desde un backend conectado como postgres se ejecuta con un rol que no queda filtrado: RLS no la detiene; la defensa sigue siendo la consulta parametrizada."
+   },
+   {
+    "text": "Tabla de referencia en Supabase: <code class=\"ic\">tareas(id bigserial, titulo text, hecha boolean, usuario_id uuid, creada_en timestamptz)</code>. Para un panel, el equipo crea <code class=\"ic\">create view resumen as select usuario_id, count(*) as total from tareas group by usuario_id;</code> y la expone en la API de datos. Un usuario cualquiera ve los totales de TODOS los usuarios, aunque tareas tiene RLS. <strong>Selecciona las 2 afirmaciones correctas.</strong>",
+    "opts": [
+     "Por defecto, una vista consulta las tablas con los privilegios de quien la creó (postgres), por lo que puede saltarse el RLS de la tabla base.",
+     "Se corrige creando la vista con <code class=\"ic\">with (security_invoker = true)</code> (PostgreSQL 15 o superior), para que se evalúe con los permisos y el RLS de quien consulta, o quitando el acceso a la vista a anon y authenticated.",
+     "Las vistas siempre respetan el RLS de la tabla base; el problema debe ser que la política de tareas está mal escrita.",
+     "Basta con ejecutar <code class=\"ic\">alter view resumen enable row level security;</code> igual que en una tabla.",
+     "No hay fuga de información, porque la vista solo muestra conteos y no el contenido de las tareas."
+    ],
+    "correct": [
+     0,
+     1
+    ],
+    "just": "Correctas: en PostgreSQL una vista se ejecuta, por defecto, con los privilegios de su dueño; si el dueño es postgres, que no queda filtrado por RLS, la vista ve todas las filas. Desde PostgreSQL 15, security_invoker = true hace que la vista use los permisos y las políticas del usuario que consulta; otra opción es no exponerla a los roles públicos. Incorrectas: las vistas no heredan automáticamente el RLS del consultante (precisamente por eso existe security_invoker). ENABLE ROW LEVEL SECURITY es para tablas, no para vistas. Y los conteos por usuario sí filtran información (cuántos usuarios hay, sus identificadores y su actividad)."
+   },
+   {
+    "text": "Tabla de referencia en Supabase: <code class=\"ic\">tareas(id bigserial, titulo text, hecha boolean, usuario_id uuid, creada_en timestamptz)</code>. La tabla creció a cientos de miles de filas y cada <code class=\"ic\">select()</code> filtrado por RLS tarda demasiado, consumiendo más CPU (y energía) del servidor. <strong>Selecciona las 3 prácticas correctas.</strong>",
+    "opts": [
+     "Crear un índice sobre la columna usada en la política: <code class=\"ic\">create index on tareas (usuario_id);</code>",
+     "Escribir <code class=\"ic\">(select auth.uid())</code> en lugar de <code class=\"ic\">auth.uid()</code> en la política, para que la función se evalúe una vez por consulta y no por cada fila.",
+     "Restringir cada política al rol que corresponde con <code class=\"ic\">to authenticated</code>, para no evaluarla en peticiones que nunca deberían pasar.",
+     "Usar la clave service_role en el frontend para evitar el costo de evaluar RLS.",
+     "Desactivar RLS y filtrar en React con <code class=\"ic\">tareas.filter(t =&gt; t.usuario_id === user.id)</code>.",
+     "Traer todas las filas y guardarlas en localStorage para no volver a consultar la base."
+    ],
+    "correct": [
+     0,
+     1,
+     2
+    ],
+    "just": "Correctas: son las recomendaciones de rendimiento de RLS de Supabase: un índice en la columna comparada evita recorrer la tabla completa; envolver auth.uid() en un select permite que PostgreSQL lo calcule una sola vez por consulta; especificar el rol evita evaluar políticas innecesarias. Conecta con el desafío de sostenibilidad del curso: menos CPU del servidor y respuestas más chicas. Incorrectas: la service_role en el navegador expone una clave que omite RLS (fuga total). Filtrar en React obliga a descargar datos ajenos al navegador. Y localStorage convierte al navegador en fuente de verdad y descarga igual todo; el Lab 3 lo prohíbe."
+   },
+   {
+    "text": "Sobre cómo llega la identidad del usuario hasta una política RLS cuando React usa supabase-js, <strong>selecciona las 3 afirmaciones correctas.</strong>",
+    "opts": [
+     "Tras el login, supabase-js envía el JWT de la sesión en la cabecera Authorization; Supabase ejecuta la consulta con el rol authenticated y auth.uid() lee el identificador del usuario (claim sub) de ese token.",
+     "Si no hay sesión, la petición se ejecuta con el rol anon.",
+     "La clave anon identifica al PROYECTO, no al usuario: todos los visitantes usan la misma.",
+     "La clave anon contiene el id del usuario, por eso cada estudiante necesita su propia clave anon.",
+     "Las políticas RLS se evalúan dentro del navegador, en la librería supabase-js, antes de enviar la petición.",
+     "El frontend debe enviar su usuario_id en cada consulta para que auth.uid() lo pueda leer."
+    ],
+    "correct": [
+     0,
+     1,
+     2
+    ],
+    "just": "Correctas: el JWT viaja en Authorization y de ahí salen el rol y el sub que devuelve auth.uid(). Sin JWT de usuario, la petición es anónima (rol anon). La anon es una sola clave pública por proyecto. Incorrectas: la anon no lleva datos de usuario. RLS se evalúa en PostgreSQL, en el servidor; si se evaluara en el navegador, cualquiera podría evitarla (lo mismo que el Lab 3 dice de las validaciones del Frontend). Y auth.uid() no lee nada que mande el cliente como dato: lee el token firmado; confiar en un usuario_id enviado por el cliente sería falsificable."
+   },
+   {
+    "text": "Tabla de referencia en Supabase: <code class=\"ic\">tareas(id bigserial, titulo text, hecha boolean, usuario_id uuid, creada_en timestamptz)</code>. Con la política <code class=\"ic\">for insert to authenticated with check ((select auth.uid()) = usuario_id)</code>, Ana ejecuta desde React <code class=\"ic\">supabase.from(\"tareas\").insert({ titulo: \"Pesar cartón\" })</code> y recibe un error de row-level security. <strong>Selecciona las 2 afirmaciones correctas.</strong>",
+    "opts": [
+     "Falla porque usuario_id quedó NULL: la fila nueva no cumple WITH CHECK, ya que NULL no es igual al uid de Ana.",
+     "Una solución coherente con el diccionario de datos del Lab 2 es que la BASE asigne el dueño: <code class=\"ic\">alter table tareas alter column usuario_id set default auth.uid();</code>",
+     "La solución correcta es cambiar la política a <code class=\"ic\">with check (true)</code>, porque Ana ya está autenticada.",
+     "RLS asigna automáticamente usuario_id cuando falta; el error indica que la sesión de Ana venció.",
+     "Hay que leer el usuario_id de otro usuario desde localStorage y enviarlo en el insert."
+    ],
+    "correct": [
+     0,
+     1
+    ],
+    "just": "Correctas: si nadie asigna usuario_id queda NULL y la comparación no es verdadera, así que WITH CHECK rechaza la fila. El Lab 2 pide decidir \"quién asigna\" cada campo; que la base lo complete con default auth.uid() lo toma del token verificado y el WITH CHECK sigue impidiendo que alguien cree tareas a nombre de otro. Incorrectas: with check (true) permitiría insertar con cualquier usuario_id, incluido el de otra persona. RLS no rellena columnas: solo permite o rechaza. Y tomar un id de localStorage es falsificable y, además, el de otro usuario sería rechazado por la política."
+   }
+  ]
+ },
+ {
+  "id": 3,
+  "title": "Integración full-stack: completa el código",
+  "icon": "🧩",
+  "color": "teal",
+  "type": "dragdrop",
+  "desc": "Completa enunciados y fragmentos de código de React, Flask, PostgreSQL, Supabase y medición del frontend",
+  "questions": [
+   {
+    "before": "fetch solo rechaza la promesa ante un fallo de RED; un 404 o un 500 llegan como una respuesta \"exitosa\". Por eso, antes de llamar a r.json(), el código debe revisar la propiedad ",
+    "correct": "r.ok",
+    "after": ", que solo es verdadera para los códigos 200 a 299.",
+    "just": "El Lab F4 plantea la reflexión de revisar r.ok antes de r.json() y el Lab 3 lo centraliza en handle(res): si !res.ok, se lee el { error } del contrato y se lanza una excepción con mensaje legible. Sin esa verificación, un 404 con cuerpo de error se trataría como datos válidos. No confundir con 204, que sí es ok pero no tiene cuerpo, ni con el manejo del catch, que solo atrapa errores de red o de interpretación."
+   },
+   {
+    "before": "Si el cuerpo {\"titulo\": \"comprar spam\"} tiene la forma correcta pero incumple la política de palabras prohibidas del service, la API responde con el código ",
+    "correct": "422",
+    "after": ", y no con 400, que se reserva para errores de formato.",
+    "just": "El Lab 2 define 400 como error de FORMATO (el dato está mal escrito o falta) y 422 como Unprocessable: la forma es válida pero incumple una REGLA DE NEGOCIO; el Mini Task Manager lanza 422 desde el service cuando detecta una palabra prohibida. El otro código numérico del banco, 204, corresponde a un DELETE exitoso sin cuerpo."
+   },
+   {
+    "before": "Según el contrato del Lab 2, un DELETE exitoso responde ",
+    "correct": "204",
+    "after": " No Content; por eso la función handle(res) del frontend devuelve null en ese caso, sin intentar leer JSON.",
+    "just": "El Lab 2 lista 204 No Content para DELETE y el Lab 3 muestra que handle(res) devuelve null ante 204 (json-server devuelve 200 con {} y handle lo tolera). Llamar a res.json() sobre un 204 lanza un error aunque el borrado haya funcionado. 422 corresponde a reglas de negocio incumplidas."
+   },
+   {
+    "before": "Lighthouse solo es una medición válida sobre el build de producción: primero npm run build y luego se sirve con ",
+    "correct": "npm run preview",
+    "after": " (puerto 4173), nunca con el servidor de desarrollo del puerto 5173.",
+    "just": "La \"regla de oro\" del Lab F6: nunca medir sobre npm run dev, porque sirve módulos sin comprimir y con herramientas de depuración. Con el mismo código se midió Performance 55 y 5 MB en desarrollo contra Performance 99 y 88 KB en producción. La guía técnica de verificación exige el mismo procedimiento y recomienda la mediana de tres ejecuciones en modo Mobile."
+   },
+   {
+    "before": "En la pestaña Network de DevTools, la columna ",
+    "correct": "Transferred",
+    "after": " refleja los bytes HTTP comprimidos que realmente viajan por la red, mientras que Resource Size puede ser mayor.",
+    "just": "La guía técnica de verificación indica que Transferred es la referencia para el tráfico HTTP comprimido y que Resource Size representa el tamaño del recurso ya descomprimido; el equipo debe declarar cuál usa. Tampoco vale sumar la carpeta dist/: ese total es tamaño almacenado, no bytes transferidos."
+   },
+   {
+    "before": "Toda variable de entorno con el prefijo ",
+    "correct": "VITE_",
+    "after": " se incrusta en el JavaScript de dist/ y la puede leer cualquier visitante; por eso ahí jamás debe ir una clave privada.",
+    "just": "El Lab 3 lo explica en su desafío de seguridad: todo lo que empieza con VITE_ se empaqueta en el JavaScript que baja al navegador y es PÚBLICO (se puede encontrar con Ctrl+F en dist/assets). VITE_API_URL está bien porque es una URL pública; una clave como la service_role de Supabase jamás."
+   },
+   {
+    "before": "La clave ",
+    "correct": "service_role",
+    "after": " de Supabase omite por completo las políticas RLS, así que solo puede usarse en un servidor de confianza y nunca en el frontend.",
+    "just": "La service_role está pensada para procesos de servidor y omite RLS; la anon es la que se usa en clientes públicos y queda protegida por las políticas. Si la service_role llegara al bundle de React, cualquiera podría leer, modificar o borrar toda la base; habría que regenerarla."
+   },
+   {
+    "before": "En la política using ( (select ",
+    "correct": "auth.uid()",
+    "after": ") = usuario_id ), la función devuelve el identificador del usuario leído del JWT de la petición, o NULL si la petición es anónima.",
+    "just": "auth.uid() lee el claim sub del token de la sesión que supabase-js envía en Authorization. Para peticiones anónimas devuelve NULL y la comparación no es verdadera, por lo que no se ve ninguna fila. Envolverla en (select ...) permite que se evalúe una vez por consulta, una recomendación de rendimiento de Supabase."
+   },
+   {
+    "before": "En una política FOR INSERT solo se admite la cláusula ",
+    "correct": "WITH CHECK",
+    "after": ", que valida los valores de la fila NUEVA antes de guardarla; USING, en cambio, filtra filas que ya existen.",
+    "just": "USING decide qué filas existentes son visibles o afectables (SELECT, UPDATE, DELETE); WITH CHECK decide si la fila resultante es aceptable (INSERT, UPDATE). En un INSERT no hay fila previa que filtrar, por eso PostgreSQL solo acepta WITH CHECK: es lo que impide crear tareas con el usuario_id de otra persona."
+   },
+   {
+    "before": "Con el driver pg8000 elegido en el Lab B1, el marcador de posición de una consulta parametrizada es ",
+    "correct": "%s",
+    "after": ", no el $1 que usa el driver pg de Node en el tutorial del Mini Task Manager.",
+    "just": "El Lab B1 reemplaza psycopg2-binary por pg8000 (100 % Python, sin compilador) con el \"mismo estilo de parámetros %s\". El principio (enviar el valor separado de la consulta) es el mismo del Mini Task Manager; la sintaxis del marcador depende del driver. Ojo: es execute(consulta, (valor,)), nunca el operador % de Python."
+   },
+   {
+    "before": "En DB-API (pg8000) el autocommit viene desactivado: si después del INSERT no se llama a ",
+    "correct": "conn.commit()",
+    "after": ", la transacción se revierte al cerrarse la conexión aunque la API ya haya respondido 201.",
+    "just": "Los drivers DB-API abren una transacción implícita que hay que confirmar. Sin commit, el RETURNING devuelve el id dentro de la transacción (por eso la API \"parece\" funcionar), pero la fila desaparece al cerrarse la conexión; la secuencia del id no se revierte y los números saltan. Un SELECT no necesita commit."
+   },
+   {
+    "before": "Al dividir el código por ruta con React.lazy(), el árbol de rutas debe envolverse en el componente ",
+    "correct": "Suspense",
+    "after": " con un fallback; sin él, React lanza un error en vez de mostrar \"Cargando…\".",
+    "just": "El Lab F6 muestra lazy(() => import(\"./pages/Panel\")) y aclara que Suspense es obligatorio junto con lazy(): es lo que se muestra mientras ese pedazo de código todavía no llegó. Así, quien está en /login no descarga el código de /panel, lo que la guía de verificación pide comprobar en Network."
+   },
+   {
+    "before": "Una imagen de menos de 4 KB importada desde src/assets se incrusta en el JavaScript como base64 e inutiliza loading=\"lazy\"; por eso se ubica en la carpeta ",
+    "correct": "public/",
+    "after": " y se referencia como texto: src=\"/foto.webp\".",
+    "just": "Es la \"trampa técnica\" real del Lab F6: la imagen webp de 4 088 bytes quedó por debajo del límite de 4 KB de Vite, se incrustó en el chunk y desapareció de dist/. Los archivos de public/ nunca se incrustan: siempre se sirven aparte, así que loading=\"lazy\", width y height funcionan como se espera."
+   },
+   {
+    "before": "Al renderizar una lista con tareas.map(...), cada elemento necesita la prop ",
+    "correct": "key",
+    "after": " con un identificador estable (t.id), nunca el índice del arreglo, o React mezcla el contenido al borrar o reordenar.",
+    "just": "El Lab 3 y el Lab F1 insisten: key={t.id} siempre. React usa la key para saber qué elemento cambió entre renders; con el índice, al borrar o reordenar, las posiciones cambian y React reutiliza elementos equivocados. Sin key, además, avisa en consola y puede redibujar de más."
+   },
+   {
+    "before": "Para marcar una tarea como hecha se crea un arreglo NUEVO con map y se entrega a ",
+    "correct": "setTareas",
+    "after": "; escribir tareas[0].hecha = true no redibuja la pantalla porque React compara referencias.",
+    "just": "El Lab F1 llama a la inmutabilidad \"el punto más importante del laboratorio\": setTareas(tareas.map(t => t.id === id ? { ...t, hecha: !t.hecha } : t)). Mutar el arreglo existente conserva la misma referencia y React no detecta el cambio; comparar referencias es instantáneo, comparar contenido profundo sería costoso."
+   },
+   {
+    "before": "En Flask, cada recurso de la API se agrupa en un ",
+    "correct": "Blueprint",
+    "after": " (por ejemplo tareas_bp, con routes.py, services.py y repository.py) que se registra dentro de create_app(), evitando el app.py de 800 líneas.",
+    "just": "El Lab B1 parte del problema del app.py de 800 líneas que mezcla ruta HTTP, validación y acceso a datos, y lo resuelve con Blueprints (una pieza por recurso) y 3 capas dentro de cada pieza. La application factory create_app() los registra y wsgi.py es el punto de entrada para flask run y gunicorn."
+   }
+  ]
+ }
+];
+
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+const QUESTIONS_PER_SECTION = 8; // preguntas mostradas por bloque en cada intento (se sortean de un pool más grande)
+const TOTAL_QUESTIONS = QUESTIONS_PER_SECTION * 4; // debe coincidir con el número de objetos en SECTIONS
+const EXAM_SECONDS = 40*60;
+const LOCK_STORAGE_KEY = 'upds_sis0301_final_2026'; // clave única de localStorage: distinta por cada examen/materia para no chocar con otros exámenes abiertos en el mismo navegador
+
+function buildActiveSection(sec) {
+  const s = JSON.parse(JSON.stringify(sec));
+  // Banco de preguntas ampliado: se toma una muestra aleatoria de N preguntas
+  // del pool completo de la sección en cada intento, para que el examen
+  // varie entre estudiantes e intentos.
+  const n = Math.min(QUESTIONS_PER_SECTION, s.questions.length);
+  s.questions = shuffle(s.questions).slice(0, n);
+  if (s.type === 'multiple') {
+    s.questions = s.questions.map(q => {
+      const indexed = q.opts.map((opt, i) => ({ opt, i }));
+      const sh = shuffle(indexed);
+      const newCorrect = sh.findIndex(x => x.i === q.correct);
+      return { ...q, opts: sh.map(x => x.opt), correct: newCorrect };
+    });
+  } else if (s.type === 'multiselect') {
+    s.questions = s.questions.map(q => {
+      const indexed = q.opts.map((opt, i) => ({ opt, i }));
+      const sh = shuffle(indexed);
+      const correctSet = new Set(q.correct);
+      const newCorrect = sh.reduce((acc, x, ni) => { if (correctSet.has(x.i)) acc.push(ni); return acc; }, []);
+      return { ...q, opts: sh.map(x => x.opt), correct: newCorrect };
+    });
+  } else if (s.type === 'dragdrop') {
+    // El banco de palabras se construye dinamicamente a partir de las
+    // preguntas efectivamente seleccionadas en este intento (no de un
+    // listado estatico), para que coincida siempre 1 a 1 con los espacios
+    // en blanco mostrados.
+    s.bankWords = shuffle(s.questions.map(q => q.correct));
+  }
+  return s;
+}
+
+let ACTIVE_SECTIONS = [];
+
+const CLRS = {
+  blue:  {tab:'#007AFF', badge:'bg-blue-100 text-blue-700'},
+  purple:{tab:'#AF52DE', badge:'bg-purple-100 text-purple-700'},
+  green: {tab:'#34C759', badge:'bg-green-100 text-green-700'},
+  orange:{tab:'#FF9500', badge:'bg-orange-100 text-orange-700'},
+  teal:  {tab:'#5AC8FA', badge:'bg-cyan-100 text-cyan-700'},
+  red:   {tab:'#FF3B30', badge:'bg-red-100 text-red-700'},
+};
+
+let state = {
+  screen: 'intake',
+  student: null,
+  current: 0,
+  answers: null,
+  submitted: false,
+  seconds: EXAM_SECONDS,
+  timerInterval: null,
+  selectedChip: null,
+  consent: false,
+  lockRecord: null,
+  veriCode: null,
+  annulled: false,
+  annulReason: null,
+};
+
+function formatDateTimeLocal(date) {
+  const pad = n => String(n).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+function formatDateTimeForDisplay(value) {
+  const date = value ? new Date(value) : new Date();
+  return date.toLocaleString('es-BO', {dateStyle:'full', timeStyle:'short'});
+}
+
+// ---------- Mecanismo de bloqueo por correo: un intento por correo, registrado en este navegador ----------
+function normalizeEmail(e){ return (e||'').trim().toLowerCase(); }
+
+function getLocks(){
+  try {
+    const raw = localStorage.getItem(LOCK_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch(err){ return {}; }
+}
+
+function saveLocks(locks){
+  try { localStorage.setItem(LOCK_STORAGE_KEY, JSON.stringify(locks)); } catch(err){}
+}
+
+function getLockForEmail(email){
+  const key = normalizeEmail(email);
+  if(!key) return null;
+  const locks = getLocks();
+  return locks[key] || null;
+}
+
+// Hash no criptografico (variante cyrb53) para generar un código de verificación corto y estable,
+// sin depender de crypto.subtle (bloqueado en algunos navegadores bajo file://).
+function simpleHash(str){
+  let h1 = 0xdeadbeef ^ str.length, h2 = 0x41c6ce57 ^ str.length;
+  for (let i=0;i<str.length;i++){
+    const ch = str.charCodeAt(i);
+    h1 = Math.imul(h1 ^ ch, 2654435761);
+    h2 = Math.imul(h2 ^ ch, 1597334677);
+  }
+  h1 = Math.imul(h1 ^ (h1>>>16), 2246822507) ^ Math.imul(h2 ^ (h2>>>13), 3266489909);
+  h2 = Math.imul(h2 ^ (h2>>>16), 2246822507) ^ Math.imul(h1 ^ (h1>>>13), 3266489909);
+  return 4294967296 * (2097151 & h2) + (h1>>>0);
+}
+
+function generateSubmissionCode(email, tsIso){
+  const raw = normalizeEmail(email) + '|' + tsIso;
+  const num = simpleHash(raw);
+  return 'PW2S0301-' + num.toString(36).toUpperCase().slice(0,8);
+}
+
+function renderLockBanner(record){
+  const banner = document.getElementById('lock-banner');
+  if(!banner) return;
+  if(!record){ banner.style.display='none'; banner.innerHTML=''; return; }
+  banner.style.display='';
+  banner.className = 'mt-2 rounded-xl px-3 py-2.5 text-xs leading-relaxed bg-orange-50 border border-orange-300 text-orange-800';
+  banner.innerHTML = '<strong>&#128274; Este correo ya registró una respuesta</strong><br>Entregado el ' + record.submittedAtDisplay + ' &middot; Código: <strong>' + record.code + '</strong><br>Esa respuesta es tu nota final. Toca el botón de abajo para volver a verla.';
+}
+
+function handleStartClick(){
+  if(state.lockRecord){
+    loadLockedResult(state.lockRecord);
+  } else {
+    startExam();
+  }
+}
+
+function loadLockedResult(record){
+  ACTIVE_SECTIONS = record.activeSections;
+  state.student = record.student;
+  state.answers = record.answers;
+  state.submitted = true;
+  state.veriCode = record.code;
+  state.annulled = !!record.annulled;
+  state.annulReason = record.annulReason || null;
+  document.getElementById('intake-screen').style.display = 'none';
+  computeAndRenderResults();
+}
+
+function checkIntake() {
+  const n = document.getElementById('inp-nombre').value.trim();
+  const c = document.getElementById('inp-codigo').value.trim();
+  const eEl = document.getElementById('inp-email');
+  const e = eEl ? eEl.value.trim() : '';
+  // Validación permisiva: acepta cualquier texto con @ y al menos un punto después
+  const emailOk = e.length > 0 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+  const f = document.getElementById('inp-fecha').value;
+  const consentInput = document.getElementById('inp-consent');
+  state.consent = consentInput ? consentInput.checked : state.consent;
+
+  const lockRec = emailOk ? getLockForEmail(e) : null;
+  state.lockRecord = lockRec;
+  renderLockBanner(lockRec);
+
+  const btn = document.getElementById('btn-start');
+  if (!btn) return;
+
+  if (lockRec) {
+    // El correo ya entregó una respuesta: se habilita el botón únicamente para VER esa nota final.
+    btn.disabled = false;
+    btn.style.background = '#FF9500';
+    btn.style.color = '#fff';
+    btn.className = 'w-full py-4 rounded-2xl font-bold text-base transition-all active:scale-95 cursor-pointer shadow-md';
+    btn.textContent = 'Ver mi resultado ya registrado ▶';
+    return;
+  }
+
+  const ok = n && c && emailOk && f && state.consent;
+  if (ok) {
+    btn.disabled = false;
+    btn.style.background = '#007AFF';
+    btn.style.color = '#fff';
+    btn.className = 'w-full py-4 rounded-2xl font-bold text-base transition-all active:scale-95 cursor-pointer shadow-md';
+    btn.textContent = 'Comenzar Examen ▶';
+  } else {
+    btn.disabled = true;
+    btn.style.background = '';
+    btn.style.color = '';
+    btn.className = 'w-full py-4 rounded-2xl font-bold text-base bg-gray-200 text-gray-400 transition-all cursor-not-allowed';
+    btn.textContent = 'Completar todos los campos para continuar';
+  }
+}
+
+function toggleConsent(checked) {
+  state.consent = typeof checked === 'boolean' ? checked : !state.consent;
+  const input = document.getElementById('inp-consent');
+  if (input) input.checked = state.consent;
+  const box = document.getElementById('consent-box');
+  if (box) {
+    if (state.consent) {
+      box.style.background = '#007AFF';
+      box.style.borderColor = '#007AFF';
+      box.innerHTML = '<svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4L4.5 7.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    } else {
+      box.style.background = '';
+      box.style.borderColor = '';
+      box.innerHTML = '';
+    }
+  }
+  checkIntake();
+}
+
+function initializeIntakeScreen() {
+  const intakeLogo = document.getElementById('intake-logo');
+  if (intakeLogo) intakeLogo.src = LOGO_DATA_URI;
+  const hdLogo = document.getElementById('hd-logo');
+  if (hdLogo) hdLogo.src = LOGO_DATA_URI;
+  document.getElementById('inp-fecha').value = formatDateTimeLocal(new Date());
+  checkIntake();
+  // Forzar re-evaluación después de que el browser procese todos los valores iniciales
+  setTimeout(checkIntake, 100);
+  var _poll = setInterval(function() {
+    var el = document.getElementById('intake-screen');
+    if (!el || el.style.display === 'none') { clearInterval(_poll); return; }
+    checkIntake();
+  }, 250);
+}
+
+// ---------- Monitor de integridad: anula el examen si el estudiante cambia de pestaña/ventana ----------
+let integrityMonitorActive = false;
+
+function startIntegrityMonitor(){
+  integrityMonitorActive = true;
+  document.addEventListener('visibilitychange', handleVisibilityChange);
+  window.addEventListener('blur', handleWindowBlur);
+}
+
+function stopIntegrityMonitor(){
+  integrityMonitorActive = false;
+  document.removeEventListener('visibilitychange', handleVisibilityChange);
+  window.removeEventListener('blur', handleWindowBlur);
+}
+
+function handleVisibilityChange(){
+  if(!integrityMonitorActive || state.submitted) return;
+  if(document.hidden){
+    annulExam('Cambiaste de pestaña o minimizaste el navegador durante el examen.');
+  }
+}
+
+function handleWindowBlur(){
+  if(!integrityMonitorActive || state.submitted) return;
+  // Pequeño margen para no disparar en falso por un enfoque interno de la propia página;
+  // se confirma que la ventana realmente perdio el foco antes de anular.
+  setTimeout(function(){
+    if(!integrityMonitorActive || state.submitted) return;
+    if(document.hidden || !document.hasFocus()){
+      annulExam('Saliste de la ventana del examen (cambio de aplicación o pestaña) durante el examen.');
+    }
+  }, 50);
+}
+
+function annulExam(reason){
+  if(state.submitted) return;
+  stopIntegrityMonitor();
+  clearInterval(state.timerInterval);
+  state.submitted = true;
+  state.annulled = true;
+  state.annulReason = reason;
+  saveLockRecord();
+  computeAndRenderResults();
+}
+
+function startExam() {
+  const n = document.getElementById('inp-nombre').value.trim();
+  const c = document.getElementById('inp-codigo').value.trim();
+  const e = document.getElementById('inp-email').value.trim();
+  const f = document.getElementById('inp-fecha').value;
+  const emailOk = e.length > 0 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+  if (!n||!c||!emailOk||!f||!state.consent) return;
+
+  // Verificación de respaldo: si el correo ya registró una respuesta, no se inicia un examen nuevo.
+  const existingLock = getLockForEmail(e);
+  if (existingLock) { state.lockRecord = existingLock; loadLockedResult(existingLock); return; }
+
+  state.student = { nombre:n, codigo:c, email:e, startTime: formatDateTimeForDisplay(f) };
+  ACTIVE_SECTIONS = shuffle(SECTIONS).map(buildActiveSection);
+  state.answers = ACTIVE_SECTIONS.map(sec => {
+    if (sec.type === 'multiselect') {
+      return Array(sec.questions.length).fill(null).map(() => []);
+    } else {
+      return Array(sec.questions.length).fill(null);
+    }
+  });
+
+  document.getElementById('hd-student').textContent = `${n} · ${c}`;
+  document.getElementById('intake-screen').style.display = 'none';
+  document.getElementById('app-shell').style.display = '';
+  startTimer();
+  startIntegrityMonitor();
+  render();
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeIntakeScreen);
+} else {
+  initializeIntakeScreen();
+}
+
+function startTimer() {
+  state.timerInterval = setInterval(()=>{
+    state.seconds--;
+    const m = String(Math.floor(state.seconds/60)).padStart(2,'0');
+    const s = String(state.seconds%60).padStart(2,'0');
+    const el = document.getElementById('timer');
+    if (el) { el.textContent=`${m}:${s}`; if(state.seconds<=300) el.classList.add('text-ios-red','font-black'); }
+    if (state.seconds<=0){ clearInterval(state.timerInterval); confirmSubmit(true); }
+  },1000);
+}
+
+function countAnswered(){
+  let n=0;
+  ACTIVE_SECTIONS.forEach((sec,si)=>{
+    sec.questions.forEach((_,qi)=>{
+      const a=state.answers[si][qi];
+      if(sec.type==='multiselect') { if(a&&a.length>0) n++; }
+      else if(a!==null) n++;
+    });
+  });
+  return n;
+}
+
+function updateProgress(){
+  const ans=countAnswered();
+  document.getElementById('progress-bar').style.width=(ans/TOTAL_QUESTIONS*100)+'%';
+  document.getElementById('prog-pct').textContent=`${ans} / ${TOTAL_QUESTIONS}`;
+  document.getElementById('prog-label').textContent=`Bloque ${state.current+1} de ${ACTIVE_SECTIONS.length}`;
+}
+
+function updateTabs(){
+  ACTIVE_SECTIONS.forEach((sec,i)=>{
+    const tab=document.getElementById(`tab-${i}`);
+    if(!tab) return;
+    tab.textContent = `${sec.icon} ${sec.title.split(' ')[0]}`;
+    tab.className='stab';
+    if(i===state.current){
+      tab.classList.add('active');
+      tab.style.background=CLRS[sec.color].tab;
+      tab.style.borderColor=CLRS[sec.color].tab;
+    } else {
+      tab.style.background=''; tab.style.borderColor='';
+      const a=state.answers[i];
+      const done = sec.type==='multiselect' ? a.some(x=>x&&x.length>0) : a.some(x=>x!==null);
+      if(done) tab.classList.add('done');
+    }
+  });
+}
+
+function render(){ updateTabs(); updateProgress(); updateNavButtons(); renderSection(state.current); }
+
+function updateNavButtons(){
+  const prev=document.getElementById('btn-prev');
+  const next=document.getElementById('btn-next');
+  const sub=document.getElementById('btn-submit');
+  if(prev) prev.disabled=state.current===0;
+  if(next&&sub){
+    if(state.current===ACTIVE_SECTIONS.length-1){ next.style.display='none'; sub.style.display=''; }
+    else { next.style.display=''; sub.style.display='none'; }
+  }
+}
+
+function renderSection(idx, scrollMode){
+  const sec=ACTIVE_SECTIONS[idx];
+  if(!sec) return;
+  const col=CLRS[sec.color];
+  const main=document.getElementById('main-content');
+  const prevScroll = scrollMode === 'keep' ? window.scrollY : null;
+  let h=`<div class="section-in"><div class="card p-5 mb-5"><div class="flex items-start gap-3"><span class="text-3xl">${sec.icon}</span><div><div class="flex items-center gap-2 mb-1 flex-wrap"><h2 class="text-xl font-bold text-gray-900">${sec.title}</h2><span class="text-xs px-2 py-0.5 rounded-full font-semibold ${col.badge}">${sec.type==='multiple'?'Opción múltiple (1 correcta)':sec.type==='multiselect'?'Selección múltiple (2+ correctas)':sec.type==='truefalse'?'Verdadero / Falso':'Completar párrafos'}</span></div><p class="text-xs text-ios-second">${sec.desc}</p></div></div></div>`;
+  if(sec.type==='multiple') h+=renderMultiple(sec,idx,col);
+  else if(sec.type==='multiselect') h+=renderMultiSelect(sec,idx,col);
+  else if(sec.type==='truefalse') h+=renderTrueFalse(sec,idx,col);
+  else h+=renderDragDrop(sec,idx,col);
+  h+=`</div>`;
+  main.innerHTML=h;
+  if (prevScroll !== null) {
+    requestAnimationFrame(() => window.scrollTo({top: prevScroll}));
+  } else if (scrollMode !== false) {
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+  if(sec.type==='dragdrop') initDragDrop(idx);
+}
+
+function renderMultiple(sec,si,col){
+  let h='<div class="space-y-4">';
+  sec.questions.forEach((q,qi)=>{
+    const ans=state.answers[si][qi]; const sub=state.submitted;
+    h+=`<div class="card p-5"><div class="flex gap-3 mb-4"><span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${col.badge}">${qi+1}</span><p class="text-gray-800 font-medium leading-snug text-sm">${q.text}</p></div><div class="space-y-2">`;
+    q.opts.forEach((opt,oi)=>{
+      let cls='opt p-3 flex items-start gap-3';
+      let circleStyle='width:20px;height:20px;border-radius:99px;border:2px solid #D1D5DB;flex-shrink:0;margin-top:2px';
+      let circleInner='';
+      if(!sub&&ans===oi){ cls+=' sel'; circleStyle='width:20px;height:20px;border-radius:99px;border:2px solid #007AFF;background:#007AFF;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center'; circleInner='<span style="width:8px;height:8px;background:#fff;border-radius:99px;display:block"></span>'; }
+      if(sub&&oi===q.correct){ cls+=' ok'; circleStyle='width:20px;height:20px;border-radius:99px;background:#34C759;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center'; circleInner='<span style="color:#fff;font-size:11px;font-weight:bold">&#10003;</span>'; }
+      if(sub&&ans===oi&&oi!==q.correct){ cls+=' fail'; circleStyle='width:20px;height:20px;border-radius:99px;background:#FF3B30;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center'; circleInner='<span style="color:#fff;font-size:11px;font-weight:bold">&#10007;</span>'; }
+      const icon=`<span class="opt-circle" data-opt-circle="${si}-${qi}-${oi}" style="${circleStyle}">${circleInner}</span>`;
+      h+=`<div class="${cls}" data-opt="${si}-${qi}-${oi}" onclick="${sub?'':'selectSingle('+si+','+qi+','+oi+')'}">${icon}<span class="text-sm text-gray-800">${opt}</span></div>`;
+    });
+    if(sub) h+=`<div class="mt-3 p-3 rounded-xl text-xs leading-relaxed ${ans===q.correct?'bg-green-50 text-green-800':'bg-red-50 text-red-800'}"><span class="font-bold">${ans===q.correct?'&#10003; Correcto':'&#10007; Incorrecto &mdash; la respuesta era: &ldquo;'+q.opts[q.correct]+'&rdquo;'}</span><span class="block mt-1 opacity-80">&#128161; ${q.just}</span></div>`;
+    h+=`</div></div>`;
+  });
+  return h+'</div>';
+}
+
+function selectSingle(si,qi,oi){
+  if(state.submitted) return;
+  state.answers[si][qi]=oi;
+  const q=ACTIVE_SECTIONS[si].questions[qi];
+  q.opts.forEach((_,i)=>{
+    const el=document.querySelector('[data-opt="'+si+'-'+qi+'-'+i+'"]');
+    if(!el) return;
+    const isSel=i===oi;
+    el.className='opt p-3 flex items-start gap-3'+(isSel?' sel':'');
+    const circle=el.querySelector('[data-opt-circle]');
+    if(circle){
+      if(isSel){
+        circle.style.cssText='width:20px;height:20px;border-radius:99px;border:2px solid #007AFF;background:#007AFF;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center';
+        circle.innerHTML='<span style="width:8px;height:8px;background:#fff;border-radius:99px;display:block"></span>';
+      } else {
+        circle.style.cssText='width:20px;height:20px;border-radius:99px;border:2px solid #D1D5DB;background:transparent;flex-shrink:0;margin-top:2px';
+        circle.innerHTML='';
+      }
+    }
+  });
+  updateProgress();
+}
+
+function renderMultiSelect(sec,si,col){
+  let h=`<div class="space-y-4"><div class="flex items-center gap-2 px-1"><span class="w-5 h-5 rounded bg-purple-100 flex items-center justify-center text-purple-700 text-xs flex-shrink-0">&#9745;</span><p class="text-xs text-ios-second">Selecciona <strong>todas</strong> las opciones correctas. Solo obtienes el punto si marcas exactamente las correctas.</p></div>`;
+  sec.questions.forEach((q,qi)=>{
+    const sel=state.answers[si][qi]||[]; const sub=state.submitted;
+    const correct=new Set(q.correct);
+    const allOk = sel.length===q.correct.length && q.correct.every(c=>sel.includes(c));
+    h+=`<div class="card p-5"><div class="flex gap-3 mb-4"><span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${col.badge}">${qi+1}</span><p class="text-gray-800 font-medium leading-snug text-sm">${q.text}</p></div><div class="space-y-2">`;
+    q.opts.forEach((opt,oi)=>{
+      const isSelected=sel.includes(oi);
+      const isCorrect=correct.has(oi);
+      let cls='opt p-3 flex items-start gap-3';
+      let boxCls='cb-box mt-0.5';
+      let boxInner='';
+      if(!sub){
+        if(isSelected){ cls+=' sel'; boxCls+=' checked'; boxInner='<svg width="10" height="8" viewBox="0 0 10 8"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'; }
+      } else {
+        if(isSelected&&isCorrect)  { cls+=' ok';     boxCls+=' ok-check';     boxInner='<svg width="10" height="8" viewBox="0 0 10 8"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'; }
+        if(isSelected&&!isCorrect) { cls+=' fail';   boxCls+=' fail-check';   boxInner='<span style="color:white;font-size:10px;font-weight:bold">&#10007;</span>'; }
+        if(!isSelected&&isCorrect) { cls+=' missed'; boxCls+=' missed-check'; boxInner='<span style="color:white;font-size:10px;font-weight:bold">!</span>'; }
+      }
+      h+=`<div class="${cls}" data-mopt="${si}-${qi}-${oi}" onclick="${sub?'':'toggleMulti('+si+','+qi+','+oi+')'}"><span class="opt-cb ${boxCls}" data-cb="${si}-${qi}-${oi}">${boxInner}</span><span class="text-sm text-gray-800">${opt}</span></div>`;
+    });
+    if(sub){
+      h+=`<div class="mt-3 p-3 rounded-xl text-xs leading-relaxed ${allOk?'bg-green-50 text-green-800':'bg-red-50 text-red-800'}"><span class="font-bold">${allOk?'&#10003; Todas las correctas seleccionadas':'&#10007; Selección incorrecta o incompleta'}</span><span class="block mt-1 opacity-80">&#128161; ${q.just}</span></div>`;
+    } else {
+      h+=`<p class="text-xs text-ios-second mt-2 pl-1" data-count="${si}-${qi}">Seleccionadas: ${sel.length} de ${q.correct.length} necesarias</p>`;
+    }
+    h+=`</div></div>`;
+  });
+  return h+'</div>';
+}
+
+function toggleMulti(si,qi,oi){
+  if(state.submitted) return;
+  const arr=state.answers[si][qi]||[];
+  const idx=arr.indexOf(oi);
+  if(idx>=0) arr.splice(idx,1); else arr.push(oi);
+  state.answers[si][qi]=arr;
+  const isSel=arr.includes(oi);
+  const el=document.querySelector('[data-mopt="'+si+'-'+qi+'-'+oi+'"]');
+  if(el){
+    el.className='opt p-3 flex items-start gap-3'+(isSel?' sel':'');
+    const cb=el.querySelector('[data-cb]');
+    if(cb){
+      if(isSel){
+        cb.className='opt-cb cb-box checked mt-0.5';
+        cb.innerHTML='<svg width="10" height="8" viewBox="0 0 10 8"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      } else {
+        cb.className='opt-cb cb-box mt-0.5';
+        cb.innerHTML='';
+      }
+    }
+  }
+  const counter=document.querySelector('[data-count="'+si+'-'+qi+'"]');
+  if(counter){
+    const q=ACTIVE_SECTIONS[si].questions[qi];
+    counter.textContent='Seleccionadas: '+arr.length+' de '+q.correct.length+' necesarias';
+  }
+  updateProgress();
+}
+
+function renderTrueFalse(sec,si,col){
+  let h='<div class="space-y-4">';
+  sec.questions.forEach((q,qi)=>{
+    const ans=state.answers[si][qi]; const sub=state.submitted;
+    let tCls='tf flex-1', fCls='tf flex-1';
+    if(!sub){ if(ans===true) tCls+=' sel-true'; if(ans===false) fCls+=' sel-false'; }
+    else {
+      if(q.correct===true)  tCls+=' ok'; else tCls+=(ans===true?' fail':'');
+      if(q.correct===false) fCls+=' ok'; else fCls+=(ans===false?' fail':'');
+    }
+    h+=`<div class="card p-5"><div class="flex gap-3 mb-4"><span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${col.badge}">${qi+1}</span><p class="text-gray-800 font-medium leading-snug text-sm">${q.text}</p></div><div class="flex gap-3"><div class="${tCls}" data-tf="${si}-${qi}-true" onclick="${sub?'':'selectTF('+si+','+qi+',true)'}">&#10003; Verdadero</div><div class="${fCls}" data-tf="${si}-${qi}-false" onclick="${sub?'':'selectTF('+si+','+qi+',false)'}">&#10007; Falso</div></div>`;
+    if(sub){ const ok=ans===q.correct;
+      h+=`<div class="mt-3 p-3 rounded-xl text-xs leading-relaxed ${ok?'bg-green-50 text-green-800':'bg-red-50 text-red-800'}"><span class="font-bold">${ok?'&#10003; Correcto':'&#10007; La respuesta es '+(q.correct?'Verdadero':'Falso')}</span><span class="block mt-1 opacity-80">&#128161; ${q.just}</span></div>`;
+    }
+    h+=`</div>`;
+  });
+  return h+'</div>';
+}
+
+function selectTF(si,qi,val){
+  if(state.submitted) return;
+  state.answers[si][qi]=val;
+  const trueEl=document.querySelector('[data-tf="'+si+'-'+qi+'-true"]');
+  const falseEl=document.querySelector('[data-tf="'+si+'-'+qi+'-false"]');
+  if(trueEl) trueEl.className='tf flex-1'+(val===true?' sel-true':'');
+  if(falseEl) falseEl.className='tf flex-1'+(val===false?' sel-false':'');
+  updateProgress();
+}
+
+function renderDragDrop(sec,si,col){
+  const used=state.answers[si].filter(a=>a!==null);
+  const hasActive = !!state.selectedChip;
+  let bank=`<div id="word-bank-sticky" class="card p-4 mb-4" style="position:sticky;top:140px;z-index:30;box-shadow:0 4px 20px rgba(0,0,0,.13);transition:box-shadow .2s ease"><div class="flex items-center justify-between mb-2 gap-2"><p class="text-xs font-semibold text-ios-second uppercase tracking-wide">Banco de palabras</p>${hasActive?`<span class="text-xs text-ios-blue font-semibold animate-pulse">Desplazate y toca el espacio en blanco</span>`:`<span class="text-xs text-ios-second">Toca una palabra para seleccionarla</span>`}</div><div class="flex flex-wrap gap-2">`;
+  sec.bankWords.forEach(w=>{
+    const isUsed   = used.includes(w);
+    const isActive = state.selectedChip===w;
+    let cls='chip';
+    if(isUsed)   cls+=' used';
+    if(isActive) cls+=' active';
+    bank+=`<span class="${cls}" onclick="chipClick(this.dataset.word)" data-word="${w}">${w}</span>`;
+  });
+  bank+=`</div></div>`;
+  let qs='<div class="space-y-4">';
+  sec.questions.forEach((q,qi)=>{
+    const placed=state.answers[si][qi]; const sub=state.submitted;
+    let bCls='blank', bTxt=placed||'toca aquí';
+    if(placed) bCls+=' ready';
+    if(sub&&placed){ bCls=placed===q.correct?'blank ok':'blank fail'; }
+    qs+=`<div class="card p-5"><div class="flex gap-3 mb-3"><span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${col.badge}">${qi+1}</span><p class="text-xs font-semibold text-ios-second uppercase tracking-wide mt-1.5">Completa el enunciado</p></div><p class="text-gray-800 text-sm leading-relaxed">${q.before}<span class="${bCls}" id="blank-${si}-${qi}" onclick="blankClick(${si},${qi})">${bTxt}</span>${q.after}</p>`;
+    if(sub&&placed){ const ok=placed===q.correct;
+      qs+=`<div class="mt-3 p-3 rounded-xl text-xs leading-relaxed ${ok?'bg-green-50 text-green-800':'bg-red-50 text-red-800'}"><span class="font-bold">${ok?'&#10003; Correcto':'&#10007; La palabra correcta es: '+q.correct}</span><span class="block mt-1 opacity-80">&#128161; ${q.just}</span></div>`;
+    }
+    qs+=`</div>`;
+  });
+  return bank+qs+'</div>';
+}
+
+function chipClick(w){
+  if(state.submitted) return;
+  const used=state.answers[state.current].filter(a=>a!==null);
+  if(used.includes(w)&&state.selectedChip!==w) return;
+  state.selectedChip=state.selectedChip===w?null:w;
+  renderSection(state.current,'keep');
+}
+
+function blankClick(si,qi){
+  if(state.submitted||!state.selectedChip) return;
+  state.answers[si][qi]=state.selectedChip;
+  const blank=document.getElementById(`blank-${si}-${qi}`);
+  if(blank){
+    blank.textContent=state.selectedChip;
+    blank.classList.add('ready');
+  }
+  state.selectedChip=null;
+  updateProgress();
+  renderSection(state.current,'keep');
+}
+
+function initDragDrop(idx){}
+
+function goSection(idx){ if(idx<0||idx>=ACTIVE_SECTIONS.length) return; state.current=idx; state.selectedChip=null; render(); }
+function prevSection(){ if(state.current>0){ state.current--; state.selectedChip=null; render(); } }
+function nextSection(){ if(state.current<ACTIVE_SECTIONS.length-1){ state.current++; state.selectedChip=null; render(); } }
+
+function confirmSubmit(auto=false){
+  if(!auto){
+    showConfirmModal('¿Deseas entregar la actividad?', 'No podrás volver atrás. Las preguntas sin responder quedarán en blanco.', function(){
+      doSubmit();
+    });
+    return;
+  }
+  doSubmit();
+}
+
+function showConfirmModal(title, message, onConfirm){
+  // Eliminar modal previo si existe
+  var prev = document.getElementById('confirm-modal');
+  if(prev) prev.remove();
+
+  var modal = document.createElement('div');
+  modal.id = 'confirm-modal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(4px)';
+  modal.innerHTML = '<div style="background:#fff;border-radius:20px;padding:28px 24px;max-width:340px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.25);text-align:center">' +
+    '<div style="font-size:2rem;margin-bottom:12px">📋</div>' +
+    '<p style="font-weight:700;font-size:1rem;color:#1a1a1a;margin:0 0 8px">' + title + '</p>' +
+    '<p style="font-size:.85rem;color:#6C6C70;line-height:1.5;margin:0 0 24px">' + message + '</p>' +
+    '<div style="display:flex;gap:10px">' +
+      '<button id="modal-cancel" style="flex:1;padding:13px;border-radius:13px;border:2px solid #E5E5EA;background:#fff;font-weight:600;font-size:.9rem;color:#6C6C70;cursor:pointer">Cancelar</button>' +
+      '<button id="modal-confirm" style="flex:1;padding:13px;border-radius:13px;border:none;background:#34C759;color:#fff;font-weight:700;font-size:.9rem;cursor:pointer;box-shadow:0 4px 14px rgba(52,199,89,.35)">Entregar</button>' +
+    '</div></div>';
+
+  document.body.appendChild(modal);
+
+  document.getElementById('modal-cancel').onclick = function(){
+    modal.remove();
+  };
+  document.getElementById('modal-confirm').onclick = function(){
+    modal.remove();
+    onConfirm();
+  };
+  // Cerrar al tocar el fondo
+  modal.addEventListener('click', function(e){
+    if(e.target === modal) modal.remove();
+  });
+}
+
+function doSubmit(){
+  stopIntegrityMonitor();
+  clearInterval(state.timerInterval);
+  state.submitted=true;
+  saveLockRecord();
+  computeAndRenderResults();
+}
+
+function saveLockRecord(){
+  const email = state.student && state.student.email;
+  const key = normalizeEmail(email);
+  if(!key) return;
+  const tsIso = new Date().toISOString();
+  const code = generateSubmissionCode(email, tsIso);
+  state.veriCode = code;
+  const record = {
+    student: state.student,
+    activeSections: ACTIVE_SECTIONS,
+    answers: state.answers,
+    code: code,
+    annulled: !!state.annulled,
+    annulReason: state.annulReason || null,
+    submittedAtIso: tsIso,
+    submittedAtDisplay: new Date().toLocaleString('es-BO', {dateStyle:'long', timeStyle:'short'})
+  };
+  const locks = getLocks();
+  locks[key] = record;
+  saveLocks(locks);
+}
+
+function computeAndRenderResults(){
+  const rawCorrect = ACTIVE_SECTIONS.reduce((sum, sec, si) => {
+    return sum + sec.questions.filter((q, qi) => {
+      const ans = state.answers[si][qi];
+      if (sec.type === 'multiselect') {
+        const ansSet = new Set(ans);
+        const corrSet = new Set(q.correct);
+        return ansSet.size === corrSet.size && [...corrSet].every(c => ansSet.has(c));
+      } else if (sec.type === 'truefalse' || sec.type === 'multiple' || sec.type === 'dragdrop') {
+        return ans === q.correct;
+      }
+      return false;
+    }).length;
+  }, 0);
+
+  const total = ACTIVE_SECTIONS.reduce((sum, s) => sum + s.questions.length, 0);
+  const correct = state.annulled ? 0 : rawCorrect;
+  const pct = state.annulled ? 0 : Math.round((correct / total) * 100);
+
+  const annulBanner = document.getElementById('annul-banner');
+  if(annulBanner){
+    if(state.annulled){
+      annulBanner.style.display = '';
+      annulBanner.innerHTML = '<p class="font-bold text-red-800 text-sm mb-1 flex items-center gap-1.5"><span class="text-lg">&#9888;&#65039;</span> Examen anulado</p><p class="text-xs text-red-700 leading-relaxed">' + (state.annulReason || 'Se detectó un cambio de pantalla durante el examen.') + ' Según la política del examen, esto anula la evaluación y tu nota queda registrada como 0. Esta decisión es definitiva y no se puede repetir el examen.</p>';
+    } else {
+      annulBanner.style.display = 'none';
+      annulBanner.innerHTML = '';
+    }
+  }
+
+  const ring = document.getElementById('score-ring');
+  if(ring){ ring.style.borderColor = state.annulled ? '#FF3B30' : (pct>=80?'#34C759':pct>=60?'#FF9500':'#FF3B30'); }
+  document.getElementById('score-num').textContent = correct;
+  document.getElementById('score-label').textContent = state.annulled ? 'ANULADO — 0%' : (pct + '% — ' + (pct>=80?'Excelente':pct>=60?'Bueno':pct>=40?'Regular':'Necesita refuerzo'));
+  document.getElementById('score-sub').textContent = state.annulled ? ('Examen anulado por cambio de pantalla') : (correct + ' de ' + total + ' respuestas correctas');
+  document.getElementById('res-nombre').textContent = state.student.nombre;
+  document.getElementById('res-codigo').textContent = state.student.codigo;
+  document.getElementById('res-grade').textContent = state.annulled ? 'Anulado (0%)' : (pct + '% (' + (pct>=80?'Avanzado':pct>=60?'Intermedio':pct>=40?'Básico':'Inicial') + ')');
+  const veriEl = document.getElementById('res-veriCode');
+  if(veriEl) veriEl.textContent = state.veriCode || '--';
+
+  let breakdown = '';
+  ACTIVE_SECTIONS.forEach((sec, si) => {
+    const sectionCorrect = sec.questions.filter((q, qi) => {
+      const ans = state.answers[si][qi];
+      if (sec.type === 'multiselect') {
+        const ansSet = new Set(ans);
+        const corrSet = new Set(q.correct);
+        return ansSet.size === corrSet.size && [...corrSet].every(c => ansSet.has(c));
+      } else if (sec.type === 'truefalse' || sec.type === 'multiple' || sec.type === 'dragdrop') {
+        return ans === q.correct;
+      }
+    }).length;
+    const pctSec = Math.round((sectionCorrect / sec.questions.length) * 100);
+    breakdown += '<div class="p-3 rounded-lg bg-gray-50 flex justify-between items-center"><span><strong>' + sec.icon + ' ' + sec.title + '</strong><br><span class="text-xs text-ios-second">' + sectionCorrect + '/' + sec.questions.length + ' correctas</span></span><span class="text-lg font-bold ' + (pctSec>=75?'text-green-600':pctSec>=50?'text-orange-600':'text-red-600') + '">' + pctSec + '%</span></div>';
+  });
+  if(state.annulled){
+    breakdown = '<p class="text-xs text-ios-second">El desglose por bloque no aplica: la nota final es 0 por anulación. El detalle completo de lo respondido antes de la anulación queda disponible en el PDF, para fines de revisión.</p>';
+  }
+  document.getElementById('breakdown').innerHTML = breakdown;
+
+  const insights = generateInsights(ACTIVE_SECTIONS, state.answers);
+  let insightsHtml = '';
+  insights.forEach((insight) => {
+    insightsHtml += '<div class="insight-card ' + insight.level + '"><div class="ic-title">' + insight.topic + '</div><div class="ic-text">' + insight.recommendation + '</div></div>';
+  });
+  document.getElementById('insights-container').innerHTML = state.annulled ? '' : (insightsHtml || '<p class="text-ios-second text-xs">Análisis en progreso...</p>');
+
+  document.getElementById('app-shell').style.display = 'none';
+  document.getElementById('results-overlay').style.display = '';
+  window.scrollTo({top:0});
+}
+
+function generateInsights(sections, answers) {
+  const insights = [];
+  const scoreBySection = sections.map((sec, si) => {
+    const correct = sec.questions.filter((q, qi) => {
+      const ans = answers[si][qi];
+      if (sec.type === 'multiselect') {
+        const ansSet = new Set(ans);
+        const corrSet = new Set(q.correct);
+        return ansSet.size === corrSet.size && [...corrSet].every(c => ansSet.has(c));
+      } else {
+        return ans === q.correct;
+      }
+    }).length;
+    return { section: sec.title, icon: sec.icon, score: (correct / sec.questions.length) * 100 };
+  });
+
+  scoreBySection.sort((a, b) => a.score - b.score);
+  scoreBySection.slice(0, 2).forEach(item => {
+    insights.push({ level: 'high', topic: item.icon + ' ' + item.section, recommendation: 'Area de refuerzo prioritario. Revisar el material del bloque correspondiente y practicar con ejercicios adicionales antes de continuar con el curso.' });
+  });
+  scoreBySection.slice(2, 4).forEach(item => {
+    insights.push({ level: 'medium', topic: item.icon + ' ' + item.section, recommendation: 'Area de mejora. Se recomienda revisar los conceptos clave y reforzar con la bibliografía del curso.' });
+  });
+  scoreBySection.slice(4).forEach(item => {
+    insights.push({ level: 'low', topic: item.icon + ' ' + item.section, recommendation: 'Buen dominio de este tema. Mantener el nivel y profundizar con los casos prácticos del bloque.' });
+  });
+  return insights;
+}
+
+function buildDetailedFeedbackHTML() {
+  let html = '<div style="margin-top:40px;border-top:3px solid #007AFF;padding-top:30px">';
+  html += '<h2 style="font-size:20px;font-weight:700;color:#007AFF;margin-bottom:6px">Retroalimentación Detallada por Pregunta</h2>';
+  html += '<p style="font-size:12px;color:#666;margin-bottom:24px">Para cada pregunta: tu respuesta, la respuesta correcta y la justificación de todas las opciones.</p>';
+
+  ACTIVE_SECTIONS.forEach((sec, si) => {
+    html += '<div style="margin-bottom:28px">';
+    html += '<div style="background:#007AFF;color:#fff;padding:10px 16px;border-radius:10px;font-weight:700;font-size:14px;margin-bottom:14px">' + sec.icon + ' ' + sec.title + '</div>';
+
+    sec.questions.forEach((q, qi) => {
+      const ans = state.answers[si][qi];
+      let isCorrect = false;
+      if (sec.type === 'multiselect') {
+        const ansSet = new Set(ans);
+        const corrSet = new Set(q.correct);
+        isCorrect = ansSet.size === corrSet.size && [...corrSet].every(c => ansSet.has(c));
+      } else {
+        isCorrect = ans === q.correct;
+      }
+
+      const bc = isCorrect ? '#34C759' : '#FF3B30';
+      const bg = isCorrect ? '#F0FFF4' : '#FFF5F5';
+      html += '<div style="border:1px solid #e5e5ea;border-left:5px solid ' + bc + ';border-radius:10px;padding:14px;margin-bottom:12px;background:' + bg + ';page-break-inside:avoid">';
+      html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">';
+      html += '<span style="background:#007AFF;color:#fff;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:bold;flex-shrink:0">' + (qi+1) + '</span>';
+      html += '<span style="font-weight:700;font-size:12px;color:' + (isCorrect?'#1A7A34':'#C0392B') + '">' + (isCorrect?'CORRECTA':'INCORRECTA') + '</span>';
+      html += '</div>';
+
+      if (sec.type === 'dragdrop') {
+        html += '<p style="font-size:12px;color:#333;margin-bottom:10px;line-height:1.6"><strong>Enunciado:</strong> ' + q.before + '[___]' + q.after + '</p>';
+      } else {
+        html += '<p style="font-size:12px;color:#333;margin-bottom:10px;line-height:1.6;font-weight:600">' + q.text + '</p>';
+      }
+
+      html += '<div style="margin-bottom:10px">';
+      if (sec.type === 'multiple') {
+        q.opts.forEach((opt, oi) => {
+          const isMine = ans === oi, isRight = oi === q.correct;
+          let ob='#f5f5f5',obb='#ddd',olc='#888',ol='';
+          if(isMine&&isRight){ob='#E8F8EE';obb='#34C759';olc='#1A7A34';ol='Tu respuesta — CORRECTA';}
+          else if(isMine&&!isRight){ob='#FFF0EE';obb='#FF3B30';olc='#C0392B';ol='Tu respuesta — INCORRECTA';}
+          else if(!isMine&&isRight){ob='#FFF5E6';obb='#FF9500';olc='#c07000';ol='Respuesta correcta (no seleccionada)';}
+          html += '<div style="background:'+ob+';border:1px solid '+obb+';border-radius:6px;padding:7px 10px;margin-bottom:5px">';
+          if(ol) html += '<div style="font-size:10px;font-weight:700;color:'+olc+';margin-bottom:2px">'+ol+'</div>';
+          html += '<div style="font-size:11px;color:#333">'+opt+'</div></div>';
+        });
+      } else if (sec.type === 'multiselect') {
+        const cs = new Set(q.correct);
+        q.opts.forEach((opt, oi) => {
+          const isSel=(ans||[]).includes(oi), isRight=cs.has(oi);
+          let ob='#f9f9f9',obb='#e5e5ea',olc='#aaa',ol='';
+          if(isSel&&isRight){ob='#E8F8EE';obb='#34C759';olc='#1A7A34';ol='Seleccionada — CORRECTA';}
+          if(isSel&&!isRight){ob='#FFF0EE';obb='#FF3B30';olc='#C0392B';ol='Seleccionada — INCORRECTA (no debía marcarse)';}
+          if(!isSel&&isRight){ob='#FFF5E6';obb='#FF9500';olc='#c07000';ol='No seleccionada — DEBÍA MARCARSE';}
+          if(!isSel&&!isRight){ol='No seleccionada — correcto omitirla';}
+          html += '<div style="background:'+ob+';border:1px solid '+obb+';border-radius:6px;padding:7px 10px;margin-bottom:5px">';
+          if(ol) html += '<div style="font-size:10px;font-weight:700;color:'+olc+';margin-bottom:2px">'+ol+'</div>';
+          html += '<div style="font-size:11px;color:#333">'+opt+'</div></div>';
+        });
+      } else if (sec.type === 'truefalse') {
+        [{val:true,lbl:'Verdadero'},{val:false,lbl:'Falso'}].forEach(ch => {
+          const isMine=ans===ch.val, isRight=q.correct===ch.val;
+          let ob='#f5f5f5',obb='#ddd',olc='#888',ol='';
+          if(isMine&&isRight){ob='#E8F8EE';obb='#34C759';olc='#1A7A34';ol='Tu respuesta — CORRECTA';}
+          else if(isMine&&!isRight){ob='#FFF0EE';obb='#FF3B30';olc='#C0392B';ol='Tu respuesta — INCORRECTA';}
+          else if(!isMine&&isRight){ob='#FFF5E6';obb='#FF9500';olc='#c07000';ol='Respuesta correcta';}
+          html += '<div style="background:'+ob+';border:1px solid '+obb+';border-radius:6px;padding:7px 10px;margin-bottom:5px">';
+          if(ol) html += '<div style="font-size:10px;font-weight:700;color:'+olc+';margin-bottom:2px">'+ol+'</div>';
+          html += '<div style="font-size:11px;color:#333">'+ch.lbl+'</div></div>';
+        });
+      } else if (sec.type === 'dragdrop') {
+        const sa=ans||'(sin respuesta)', ok=ans===q.correct;
+        html += '<div style="background:'+(ok?'#E8F8EE':'#FFF0EE')+';border:1px solid '+(ok?'#34C759':'#FF3B30')+';border-radius:6px;padding:7px 10px;margin-bottom:5px">';
+        html += '<div style="font-size:10px;font-weight:700;color:'+(ok?'#1A7A34':'#C0392B')+';margin-bottom:2px">'+(ok?'Tu respuesta — CORRECTA':'Tu respuesta — INCORRECTA')+'</div>';
+        html += '<div style="font-size:11px;color:#333">Respondiste: <strong>'+sa+'</strong></div></div>';
+        if(!ok){
+          html += '<div style="background:#FFF5E6;border:1px solid #FF9500;border-radius:6px;padding:7px 10px;margin-bottom:5px">';
+          html += '<div style="font-size:10px;font-weight:700;color:#c07000;margin-bottom:2px">Respuesta correcta</div>';
+          html += '<div style="font-size:11px;color:#333"><strong>'+q.correct+'</strong></div></div>';
+        }
+      }
+      html += '</div>';
+      html += '<div style="background:#F0F4FF;border-left:4px solid #007AFF;border-radius:0 8px 8px 0;padding:10px 12px;font-size:11px;color:#333;line-height:1.7">';
+      html += '<strong style="color:#007AFF">Retroalimentación:</strong> ' + q.just;
+      html += '</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+  });
+  html += '</div>';
+  return html;
+}
+
+function downloadPDF() {
+  const correctBySection = ACTIVE_SECTIONS.map((sec, si) => {
+    const c = sec.questions.filter((q, qi) => {
+      const ans = state.answers[si][qi];
+      if (sec.type === 'multiselect') {
+        const ansSet = new Set(ans); const corrSet = new Set(q.correct);
+        return ansSet.size === corrSet.size && [...corrSet].every(c => ansSet.has(c));
+      } else { return ans === q.correct; }
+    }).length;
+    return Math.round((c / sec.questions.length) * 100);
+  });
+
+  const scoreNum = document.getElementById('score-num').textContent;
+  const scoreLabel = document.getElementById('score-label').textContent;
+  const insightsData = generateInsights(ACTIVE_SECTIONS, state.answers);
+
+  let html = '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Retroalimentación Examen Final - Programación Web II - '+(state.veriCode||'')+'</title>';
+  html += '<style>*{box-sizing:border-box}body{font-family:Arial,sans-serif;padding:24px;background:#f5f5f5;color:#333;margin:0}';
+  html += '.w{max-width:920px;margin:0 auto;background:#fff;border-radius:12px;padding:28px;box-shadow:0 2px 10px rgba(0,0,0,.1)}';
+  html += '.hd{text-align:center;margin-bottom:24px;border-bottom:3px solid #007AFF;padding-bottom:18px}';
+  html += '.hd h1{margin:0 0 6px;color:#1a1a1a;font-size:24px}.hd .sub{color:#007AFF;font-size:15px;font-weight:700}.hd .auth{color:#666;font-size:12px;margin-top:4px}';
+  html += '.vc{text-align:center;margin:0 0 18px;padding:10px;background:#FFF5E6;border:2px dashed #FF9500;border-radius:10px;font-size:13px;color:#8a5300}';
+  html += '.ig{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0}';
+  html += '.ib{padding:11px 14px;background:#f9f9fb;border-radius:8px;border-left:3px solid #007AFF}';
+  html += '.ib b{color:#007AFF;display:block;font-size:10px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}';
+  html += '.ib span{font-size:13px;font-weight:600;color:#1a1a1a}';
+  html += '.sc{text-align:center;margin:22px 0;padding:22px;background:linear-gradient(135deg,#007AFF,#005ACC);border-radius:14px;color:#fff}';
+  html += '.sn{font-size:50px;font-weight:900;margin:6px 0;line-height:1}.sl{font-size:14px;font-weight:600;opacity:.9}';
+  html += '.st{font-size:16px;font-weight:700;color:#333;margin:22px 0 10px;padding-bottom:5px;border-bottom:2px solid #E5E5EA}';
+  html += '.cb{display:grid;grid-template-columns:repeat(6,1fr);gap:7px;margin:14px 0}';
+  html += '.bi{display:flex;flex-direction:column;align-items:center}';
+  html += '.ba{width:100%;height:90px;background:#E5E5EA;border-radius:5px 5px 0 0;position:relative}';
+  html += '.bf{background:linear-gradient(180deg,#007AFF,#004D99);width:100%;border-radius:5px 5px 0 0;position:absolute;bottom:0;left:0}';
+  html += '.bp{position:absolute;bottom:5px;width:100%;text-align:center;color:#1a1a1a;font-weight:700;font-size:10px}';
+  html += '.bl{font-size:9px;margin-top:5px;text-align:center;line-height:1.3;color:#333}';
+  html += '.ig2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}';
+  html += '.ins{padding:10px;border-left:4px solid;border-radius:5px}';
+  html += '.ins.high{border-color:#FF3B30;background:#FFF0EE}.ins.medium{border-color:#FF9500;background:#FFF5E6}.ins.low{border-color:#34C759;background:#E8F8EE}';
+  html += '.it{font-weight:700;font-size:11px;margin-bottom:3px}';
+  html += '.ins.high .it{color:#C0392B}.ins.medium .it{color:#C67000}.ins.low .it{color:#1A7A34}';
+  html += '.ix{font-size:10px;line-height:1.4}';
+  html += '.ins.high .ix{color:#6D2826}.ins.medium .ix{color:#6B3F00}.ins.low .ix{color:#0D5722}';
+  html += '.ft{text-align:center;margin-top:24px;padding-top:16px;border-top:1px solid #E5E5EA;font-size:11px;color:#888}';
+  html += '.va{margin:0 0 18px;padding:14px;background:#FFF0EE;border:2px solid #FF3B30;border-radius:10px;color:#8a1f1f}';
+  html += '.va b{display:block;font-size:14px;margin-bottom:4px}.va span{font-size:12px;line-height:1.5}';
+  html += '.codeblk{display:block;white-space:pre-wrap;word-break:break-word;font-family:Consolas,Menlo,monospace;font-size:11px;line-height:1.45;font-weight:400;background:#F4F5F9;color:#1a1a1a;border:1px solid #D9DCE6;padding:10px 12px;border-radius:8px;margin:8px 0}.ic{font-family:Consolas,Menlo,monospace;font-size:.9em;background:#EEF0F6;color:#B4235A;padding:0 4px;border-radius:4px}';
+  html += '@media print{body{background:#fff;padding:8px}.w{box-shadow:none;padding:16px}}</style>';
+  html += '</head><body onload="setTimeout(function(){window.print();},800);"><div class="w">';
+  html += '<div class="hd"><img src="'+LOGO_DATA_URI+'" alt="Logo UPDS" style="width:56px;height:56px;object-fit:contain;margin:0 auto 10px;display:block"/><h1>Retroalimentación &mdash; Examen Final</h1><div class="sub">Programación Web II (SIS-0301) &middot; UPDS 2026</div><div class="auth">Docente: Ing. M.Sc. Jimmy Nataniel Requena Llorentty · Ingeniería de Sistemas</div></div>';
+  if(state.annulled){
+    html += '<div class="va"><b>&#9888;&#65039; EXAMEN ANULADO</b><span>'+(state.annulReason||'Se detectó un cambio de pantalla durante el examen.')+' La nota final registrada es 0. El detalle de las respuestas se incluye a continuación únicamente para fines de revisión.</span></div>';
+  }
+  html += '<div class="vc">Código de verificación: <strong>'+(state.veriCode||'SIN-CODIGO')+'</strong> &mdash; sube este PDF, tal cual, a Moodle. Un PDF sin este código no será calificado.</div>';
+  html += '<div class="ig"><div class="ib"><b>Estudiante</b><span>'+state.student.nombre+'</span></div>';
+  html += '<div class="ib"><b>Código</b><span>'+state.student.codigo+'</span></div>';
+  html += '<div class="ib"><b>Correo</b><span>'+state.student.email+'</span></div>';
+  html += '<div class="ib"><b>Fecha</b><span>'+new Date().toLocaleString('es-BO',{dateStyle:'long',timeStyle:'short'})+'</span></div></div>';
+  const pctNum = Math.round((parseInt(scoreNum) / TOTAL_QUESTIONS) * 100);
+  const nivelNum = pctNum>=80?'Avanzado':pctNum>=60?'Intermedio':pctNum>=40?'Básico':'Inicial';
+  const calidadNum = (scoreLabel.split('—')[1] || '').trim();
+  html += '<div class="sc" style="'+(state.annulled?'background:linear-gradient(135deg,#FF3B30,#B71C1C)':'')+'"><div class="sl">'+(state.annulled?'Examen Anulado':'Resultado del Examen Final')+'</div><div class="sn">'+pctNum+'%</div><div class="sl" style="font-size:13px;margin-top:4px">'+(state.annulled?'0 de '+TOTAL_QUESTIONS+' preguntas contabilizadas (anulado)':scoreNum+' de '+TOTAL_QUESTIONS+' preguntas correctas')+'</div><div class="sl" style="font-size:15px;margin-top:5px">'+(state.annulled?'Nota final: 0':(calidadNum+' &middot; Nivel de dominio: '+nivelNum))+'</div></div>';
+  if(!state.annulled){
+  html += '<div class="st">Desempeno por Bloque</div><div class="cb">';
+  correctBySection.forEach((pct, i) => {
+    const h = Math.max(pct, 3);
+    html += '<div class="bi"><div class="ba"><div class="bf" style="height:'+h+'%"></div><span class="bp">'+pct+'%</span></div>';
+    html += '<div class="bl">'+ACTIVE_SECTIONS[i].icon+'<br>'+ACTIVE_SECTIONS[i].title.split(' ').slice(0,2).join(' ')+'</div></div>';
+  });
+  html += '</div>';
+  }
+  html += '<div class="st">Análisis de Resultados</div><div class="ig2">';
+  insightsData.forEach(ins => {
+    html += '<div class="ins '+ins.level+'"><div class="it">'+ins.topic+'</div><div class="ix">'+ins.recommendation+'</div></div>';
+  });
+  html += '</div>';
+  html += buildDetailedFeedbackHTML();
+  html += '<div class="ft"><p>Documento generado automáticamente al entregar la evaluación. Código de verificación: '+(state.veriCode||'SIN-CODIGO')+'</p>';
+  html += '<p>Docente: Ing. M.Sc. Jimmy Nataniel Requena Llorentty · Ingeniería de Sistemas &mdash; Programación Web II (SIS-0301) &mdash; UPDS 2026</p></div>';
+  html += '</div></body></html>';
+
+  const blob = new Blob([html], {type:'text/html;charset=utf-8'});
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'Retroalimentacion-Final-ProgWebII-SIS0301-' + state.student.codigo + '-' + (state.veriCode||'') + '.html';
+  link.click();
+}
+</script>
+
+</body>
+</html>
